@@ -19,11 +19,14 @@ import {
 const expectedReplies = [
   `Here's the extracted bakery order:
 
-- 2 Kek Coklat
-- 6 Kaya Puff (half dozen, without extra sugar)
-- 1 Kek Lapis
+- **Items Ordered:**
+  - 2 Kek Coklat
+  - 1 Kaya Puff (without extra sugar)
+  - 1 Kek Lapis
 
-Collection: Esok petang (Tomorrow evening)`,
+- **Collection Time:** Tomorrow afternoon
+
+Let me know if you need anything else!`,
   "Your order total is RM159.",
   "Order received.\nTotal: RM162",
   "Thanks! Your order will be delivered tomorrow at 5pm 🚚",
@@ -74,10 +77,10 @@ test("the first broken stage stops later work", async () => {
 
 test("an unnumbered Kaya Puff exposes guessing but the fixed contract applies one selling unit", async () => {
   assert.match(DEMO_MESSAGE, /2 kek coklat, kaya puff, and 1 kek lapis/i);
-  assert.doesNotMatch(DEMO_MESSAGE, /half[- ]dozen|6 kaya puff/i);
+  assert.doesNotMatch(DEMO_MESSAGE, /(?:1|6) kaya puff|half[- ]dozen/i);
 
   const broken = await extractBroken(DEMO_MESSAGE, completeFixture);
-  assert.match(broken.chatResponse, /6 Kaya Puff/);
+  assert.match(broken.chatResponse, /1 Kaya Puff/);
 
   const fixed = await extractFixed(DEMO_MESSAGE, completeFixture);
   assert.deepEqual(fixed.value.items.find((item) => item.menuId === "K1"), { menuId: "K1", units: 1 });

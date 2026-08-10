@@ -45,11 +45,14 @@ Message: ${input}`,
 export const FIXTURE_MODEL_OUTPUTS = Object.freeze({
   "extract-broken": `Here's the extracted bakery order:
 
-- 2 Kek Coklat
-- 6 Kaya Puff (half dozen, without extra sugar)
-- 1 Kek Lapis
+- **Items Ordered:**
+  - 2 Kek Coklat
+  - 1 Kaya Puff (without extra sugar)
+  - 1 Kek Lapis
 
-Collection: Esok petang (Tomorrow evening)`,
+- **Collection Time:** Tomorrow afternoon
+
+Let me know if you need anything else!`,
   "extract-fixed": JSON.stringify(DEMO_ORDER),
   "price-broken": "Your order total is RM159.",
   "reply-broken": "Thanks! Your order will be delivered tomorrow at 5pm 🚚",
