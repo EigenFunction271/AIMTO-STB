@@ -63,6 +63,17 @@ export async function completeFixture(operation) {
   return FIXTURE_MODEL_OUTPUTS[operation];
 }
 
+export function formatCustomerConversation(history) {
+  const turns = history
+    .filter((message) => message?.role === "customer" && typeof message.content === "string" && message.content.trim())
+    .map((message) => message.content.trim());
+  if (turns.length === 0) throw new Error("The conversation has no customer message.");
+  return `These customer messages describe one order in chronological order.
+Later customer messages correct or update earlier ones; use the latest stated value when they conflict.
+
+${turns.map((message, index) => `Customer turn ${index + 1}${index === turns.length - 1 ? " (latest)" : ""}:\n${message}`).join("\n\n")}`;
+}
+
 // This is the live editing surface: repair one reference, then rerun the same chat.
 export const PIPELINE = Object.freeze({
   extract: extractBroken,
@@ -170,7 +181,12 @@ export function buildReply(invoice) {
 }
 
 export async function extractBroken(message, complete) {
-  return { ok: false, chatResponse: await complete("extract-broken", message) };
+  const chatResponse = await complete("extract-broken", message);
+  try {
+    return { ok: true, value: validateOrder(parseModelJson(chatResponse)), chatResponse };
+  } catch {
+    return { ok: false, chatResponse };
+  }
 }
 
 export async function extractFixed(message, complete) {
@@ -195,24 +211,69 @@ export async function invoiceFixed(pricedOrder) {
 }
 
 export async function replyBroken(invoice, complete) {
-  return complete("reply-broken", JSON.stringify(invoice));
+  return { ok: false, chatResponse: await complete("reply-broken", JSON.stringify(invoice)) };
 }
 
 export async function replyFixed(invoice) {
-  return buildReply(invoice);
+  return { ok: true, chatResponse: buildReply(invoice) };
 }
 
 export async function runOrderBotWith(pipeline, message, complete) {
+  const report = {
+    status: "running",
+    stage: "extract",
+    order: null,
+    invoice: null,
+    events: [],
+  };
   const extracted = await pipeline.extract(message, complete);
-  if (!extracted.ok) return extracted.chatResponse;
+  if (!extracted.ok) {
+    report.status = "stopped";
+    report.events.push(
+      "Extraction output did not match the order contract.",
+      "The order was not saved.",
+      "Pricing and invoice creation did not start.",
+    );
+    return { chatResponse: extracted.chatResponse, report };
+  }
+  report.order = extracted.value;
+  report.events.push("The order was validated and saved.");
 
+  report.stage = "price";
   const priced = await pipeline.price(extracted.value, complete);
-  if (!priced.ok) return priced.chatResponse;
+  if (!priced.ok) {
+    report.status = "stopped";
+    report.events.push(
+      "Pricing stopped before a trusted total was created.",
+      "Invoice creation did not start.",
+    );
+    return { chatResponse: priced.chatResponse, report };
+  }
+  report.order = priced.value;
+  report.events.push(`Pricing completed in code: RM${priced.value.totalRm}.`);
 
+  report.stage = "invoice";
   const invoice = await pipeline.invoice(priced.value);
-  if (!invoice.ok) return invoice.chatResponse;
+  if (!invoice.ok) {
+    report.status = "stopped";
+    report.events.push("The invoice was not saved because the handoff dropped required order details.");
+    return { chatResponse: invoice.chatResponse, report };
+  }
+  report.invoice = invoice.value;
+  report.events.push("The invoice was created from the validated order.");
 
-  return pipeline.reply(invoice.value, complete);
+  report.stage = "reply";
+  const reply = await pipeline.reply(invoice.value, complete);
+  if (!reply.ok) {
+    report.status = "stopped";
+    report.events.push("The customer reply came from the model and may contain unsupported promises.");
+    return { chatResponse: reply.chatResponse, report };
+  }
+
+  report.status = "complete";
+  report.stage = "complete";
+  report.events.push("The customer reply was built from validated invoice facts.");
+  return { chatResponse: reply.chatResponse, report };
 }
 
 export function runOrderBot(message, complete = completeFixture) {

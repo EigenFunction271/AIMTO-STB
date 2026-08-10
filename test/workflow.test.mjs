@@ -6,6 +6,7 @@ import {
   completeFixture,
   extractBroken,
   extractFixed,
+  formatCustomerConversation,
   invoiceBroken,
   invoiceFixed,
   priceBroken,
@@ -15,6 +16,18 @@ import {
   runOrderBotWith,
   validateOrder,
 } from "../public/workflow.js";
+
+test("customer corrections stay ordered and assistant output is never order truth", () => {
+  const conversation = formatCustomerConversation([
+    { role: "customer", content: "Nak 2 kek coklat." },
+    { role: "assistant", content: "Confirmed 4 kek coklat." },
+    { role: "customer", content: "Correction: make that 3 kek coklat." },
+  ]);
+
+  assert.match(conversation, /Later customer messages correct or update earlier ones/);
+  assert.ok(conversation.indexOf("Nak 2 kek coklat") < conversation.indexOf("make that 3 kek coklat"));
+  assert.doesNotMatch(conversation, /Confirmed 4 kek coklat/);
+});
 
 const expectedReplies = [
   `Here's the extracted bakery order:
@@ -49,30 +62,71 @@ test("each repair exposes exactly the next failure", async () => {
     { extract: extractFixed, price: priceFixed, invoice: invoiceFixed, reply: replyFixed },
   ];
 
+  const expectedReports = [
+    { status: "stopped", stage: "extract", order: false, invoice: false },
+    { status: "stopped", stage: "price", order: true, invoice: false },
+    { status: "stopped", stage: "invoice", order: true, invoice: false },
+    { status: "stopped", stage: "reply", order: true, invoice: true },
+    { status: "complete", stage: "complete", order: true, invoice: true },
+  ];
+
   for (const [index, pipeline] of pipelines.entries()) {
-    assert.equal(await runOrderBotWith(pipeline, DEMO_MESSAGE, completeFixture), expectedReplies[index]);
+    const result = await runOrderBotWith(pipeline, DEMO_MESSAGE, completeFixture);
+    assert.equal(result.chatResponse, expectedReplies[index]);
+    assert.equal(result.report.status, expectedReports[index].status);
+    assert.equal(result.report.stage, expectedReports[index].stage);
+    assert.equal(Boolean(result.report.order), expectedReports[index].order);
+    assert.equal(Boolean(result.report.invoice), expectedReports[index].invoice);
   }
 });
 
-test("the first broken stage stops later work", async () => {
+test("broken extraction shows the raw reply but rejects it as order data", async () => {
+  const operations = [];
+  const complete = async (operation, input) => {
+    operations.push(operation);
+    return completeFixture(operation, input);
+  };
+  const result = await runOrderBotWith(
+    { extract: extractBroken, price: priceBroken, invoice: invoiceBroken, reply: replyBroken },
+    DEMO_MESSAGE,
+    complete,
+  );
+
+  assert.deepEqual(operations, ["extract-broken"]);
+  assert.equal(result.chatResponse, expectedReplies[0]);
+  assert.equal(result.report.status, "stopped");
+  assert.equal(result.report.stage, "extract");
+  assert.equal(result.report.order, null);
+  assert.equal(result.report.invoice, null);
+  assert.deepEqual(result.report.events, [
+    "Extraction output did not match the order contract.",
+    "The order was not saved.",
+    "Pricing and invoice creation did not start.",
+  ]);
+});
+
+test("the fixed workflow keeps validated facts and only calls extraction AI", async () => {
   const operations = [];
   const complete = async (operation, input) => {
     operations.push(operation);
     return completeFixture(operation, input);
   };
 
-  const reply = await runOrderBotWith(
+  const result = await runOrderBotWith(
     { extract: extractFixed, price: priceFixed, invoice: invoiceFixed, reply: replyFixed },
     DEMO_MESSAGE,
     complete,
   );
 
   assert.deepEqual(operations, ["extract-fixed"]);
-  assert.match(reply, /Total: RM162/);
-  assert.match(reply, /jangan letak gula lebih/);
-  assert.match(reply, /Pickup requested: esok petang/);
-  assert.doesNotMatch(reply, /deliver(?:y|ed)?/i);
-  assert.doesNotMatch(reply, /5pm/i);
+  assert.equal(result.report.status, "complete");
+  assert.equal(result.report.order.totalRm, 162);
+  assert.equal(result.report.invoice.totalRm, 162);
+  assert.match(result.chatResponse, /Total: RM162/);
+  assert.match(result.chatResponse, /jangan letak gula lebih/);
+  assert.match(result.chatResponse, /Pickup requested: esok petang/);
+  assert.doesNotMatch(result.chatResponse, /deliver(?:y|ed)?/i);
+  assert.doesNotMatch(result.chatResponse, /5pm/i);
 });
 
 test("an unnumbered Kaya Puff exposes guessing but the fixed contract applies one selling unit", async () => {

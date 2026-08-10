@@ -1,4 +1,4 @@
-import { DEMO_MESSAGE, completeFixture, runOrderBot } from "./workflow.js";
+import { DEMO_MESSAGE, MENU, completeFixture, formatCustomerConversation, runOrderBot } from "./workflow.js";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -14,15 +14,18 @@ const elements = {
   keyNote: $("#key-note"),
   modelLabel: $("#model-label"),
   form: $("#chat-form"),
+  conversation: $(".conversation"),
+  tabs: $$('[role="tab"][data-view]'),
+  chatView: $("#chat-view"),
+  dashboardView: $("#dashboard-view"),
+  currentOrder: $("#current-order"),
+  invoice: $("#invoice"),
+  runHistory: $("#run-history"),
   message: $("#customer-message"),
-  customerResponse: $("#customer-response"),
   run: $("#run-workflow"),
   runLabel: $("#run-workflow span:first-child"),
   reset: $("#reset-chat"),
   status: $("#run-status"),
-  botMessage: $("#bot-message"),
-  botResponse: $("#bot-response"),
-  typing: $("#typing-indicator"),
 };
 
 const state = {
@@ -31,16 +34,30 @@ const state = {
   apiKey: "",
   running: false,
   model: "",
+  history: [],
+  reports: [],
+  view: "chat",
 };
 
-elements.message.value = DEMO_MESSAGE;
-if (elements.customerResponse) elements.customerResponse.textContent = DEMO_MESSAGE;
 renderSettings();
 resetChat();
 
 elements.settingsTrigger.addEventListener("click", () => elements.settingsDialog.showModal());
 elements.settingsClose.addEventListener("click", () => elements.settingsDialog.close());
 elements.settingsDialog.addEventListener("close", () => elements.settingsTrigger.focus());
+
+for (const tab of elements.tabs) {
+  tab.addEventListener("click", () => setView(tab.dataset.view));
+  tab.addEventListener("keydown", (event) => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === "ArrowRight" ? 1 : -1;
+    const index = elements.tabs.indexOf(tab);
+    const target = elements.tabs[(index + next + elements.tabs.length) % elements.tabs.length];
+    setView(target.dataset.view);
+    target.focus();
+  });
+}
 
 for (const input of elements.source) {
   input.addEventListener("change", () => {
@@ -87,48 +104,42 @@ function renderSettings() {
   elements.apiKey.placeholder = live ? "Paste provider API key" : "No key needed";
   elements.clearKey.disabled = !live || !state.apiKey;
   elements.keyNote.textContent = live
-    ? "Your key stays in browser memory, goes only to this local server, and disappears on refresh."
-    : "Fixture mode is deterministic and works without Wi-Fi.";
+    ? "Live API handles arbitrary follow-ups. Your key stays in browser memory and disappears on refresh."
+    : "Scripted fixture replays the demo failures. Use Live API for arbitrary follow-ups.";
   renderModel();
 }
 
 function renderModel() {
   if (!elements.modelLabel) return;
   elements.modelLabel.textContent = state.source === "fixture"
-    ? "Model: deterministic fixture"
+    ? "Scripted fixture · demo responses"
     : state.model
       ? `Model: ${state.model}`
       : "Model: selected by local server";
 }
 
 function resetChat() {
+  state.history = [];
+  state.reports = [];
+  elements.conversation.replaceChildren();
   elements.message.value = DEMO_MESSAGE;
-  if (elements.customerResponse) elements.customerResponse.textContent = DEMO_MESSAGE;
-  elements.botResponse.textContent = "Ready when you are.";
-  elements.botResponse.hidden = false;
-  elements.botMessage.hidden = false;
-  elements.botMessage.dataset.state = "idle";
-  elements.typing.hidden = true;
   elements.runLabel.textContent = "Run bot";
+  renderDashboard();
   setStatus("Ready");
-  elements.message.focus();
+  if (state.view === "chat") elements.message.focus();
 }
 
 async function runBot() {
   if (state.running) return;
   const message = elements.message.value.trim();
-  if (!message) {
-    elements.botMessage.dataset.state = "error";
-    elements.botResponse.textContent = "Please add a customer message first.";
-    elements.botResponse.hidden = false;
+  if (!message && !state.history.some((turn) => turn.role === "customer")) {
     setStatus("Error", "error");
     elements.message.focus();
     return;
   }
   if (state.source === "live" && !state.apiKey.trim()) {
-    elements.botMessage.dataset.state = "error";
-    elements.botResponse.textContent = "Add an API key in Settings to use Live API.";
-    elements.botResponse.hidden = false;
+    const warning = appendMessage("assistant", "Add an API key in Settings to use Live API.");
+    warning.row.dataset.state = "error";
     setStatus("Error", "error");
     elements.settingsDialog.showModal();
     elements.apiKey.focus();
@@ -138,33 +149,198 @@ async function runBot() {
   state.running = true;
   elements.run.disabled = true;
   elements.run.setAttribute("aria-busy", "true");
-  elements.botMessage.hidden = false;
-  elements.botMessage.dataset.state = "running";
-  elements.botResponse.hidden = true;
-  elements.typing.hidden = false;
-  if (elements.customerResponse) elements.customerResponse.textContent = message;
+  if (message) {
+    state.history.push({ role: "customer", content: message });
+    appendMessage("customer", message);
+  }
+  elements.message.value = "";
+  const pending = appendMessage("assistant", "", "running");
   setStatus("Running");
 
   try {
     const complete = state.source === "fixture" ? completeFixture : completeLive;
-    const response = await runOrderBot(message, complete);
-    elements.botResponse.textContent = response;
-    elements.botResponse.hidden = false;
+    const result = await runOrderBot(formatCustomerConversation(state.history), complete);
+    finishMessage(pending, result.chatResponse);
+    state.history.push({ role: "assistant", content: result.chatResponse });
+    state.reports.push(result.report);
+    renderDashboard();
     elements.runLabel.textContent = "Run again";
-    const recovered = isRecovered(response);
-    elements.botMessage.dataset.state = recovered ? "success" : "response";
+    const recovered = result.report.status === "complete";
+    pending.row.dataset.state = recovered ? "success" : "response";
     setStatus(recovered ? "Recovered" : "Ready", recovered ? "success" : "");
   } catch (error) {
-    elements.botResponse.textContent = `Sorry, the bot could not run. ${safeError(error)}`;
-    elements.botResponse.hidden = false;
-    elements.botMessage.dataset.state = "error";
+    const response = `Sorry, the bot could not run. ${safeError(error)}`;
+    finishMessage(pending, response);
+    state.history.push({ role: "assistant", content: response });
+    state.reports.push({
+      status: "error",
+      stage: "unknown",
+      order: null,
+      invoice: null,
+      events: ["The workflow could not finish. No order or invoice was saved."],
+    });
+    renderDashboard();
+    pending.row.dataset.state = "error";
     setStatus("Error", "error");
   } finally {
     state.running = false;
     elements.run.disabled = false;
     elements.run.removeAttribute("aria-busy");
-    elements.typing.hidden = true;
+    elements.message.focus();
   }
+}
+
+function setView(view) {
+  state.view = view;
+  for (const tab of elements.tabs) {
+    const selected = tab.dataset.view === view;
+    tab.setAttribute("aria-selected", String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  }
+  elements.chatView.hidden = view !== "chat";
+  elements.dashboardView.hidden = view !== "dashboard";
+}
+
+function renderDashboard() {
+  const report = state.reports.at(-1);
+  renderCurrentOrder(report);
+  renderInvoice(report);
+  elements.runHistory.replaceChildren();
+
+  if (state.reports.length === 0) {
+    const empty = document.createElement("li");
+    empty.textContent = "No bot run yet.";
+    elements.runHistory.append(empty);
+    return;
+  }
+
+  for (const [index, run] of state.reports.entries()) {
+    const item = document.createElement("li");
+    const heading = document.createElement("strong");
+    const stage = run.stage === "complete" ? "completed" : `${run.status} at ${stageLabel(run.stage)}`;
+    heading.textContent = `Run ${index + 1} · ${stage}`;
+    const events = document.createElement("ul");
+    for (const event of run.events) {
+      const eventItem = document.createElement("li");
+      eventItem.textContent = event;
+      events.append(eventItem);
+    }
+    item.append(heading, events);
+    elements.runHistory.append(item);
+  }
+}
+
+function renderCurrentOrder(report) {
+  elements.currentOrder.replaceChildren();
+  if (!report?.order) {
+    appendParagraph(
+      elements.currentOrder,
+      report?.stage === "extract"
+        ? "The order was not saved because extraction did not pass validation."
+        : "No order saved yet.",
+      "dashboard-muted",
+    );
+    return;
+  }
+
+  const items = document.createElement("ul");
+  for (const item of report.order.items) {
+    const menuItem = MENU.find((entry) => entry.id === item.menuId);
+    const line = document.createElement("li");
+    line.textContent = `${item.units} × ${menuItem.name}${menuItem.unitLabel === "each" ? "" : ` · ${menuItem.unitLabel}`}`;
+    items.append(line);
+  }
+  elements.currentOrder.append(items);
+  for (const note of report.order.notes) appendParagraph(elements.currentOrder, `Note: ${note.text}`);
+  const fulfilment = report.order.fulfilment;
+  appendParagraph(
+    elements.currentOrder,
+    fulfilment.method === "unknown"
+      ? "Fulfilment: not specified"
+      : `${fulfilment.method === "pickup" ? "Pickup" : "Delivery"} requested${fulfilment.requestedTime ? `: ${fulfilment.requestedTime}` : ""}`,
+  );
+  if (Number.isFinite(report.order.totalRm)) {
+    appendParagraph(elements.currentOrder, `Priced total: RM${report.order.totalRm}`, "dashboard-total");
+  }
+}
+
+function renderInvoice(report) {
+  elements.invoice.replaceChildren();
+  if (!report?.invoice) {
+    const message = Number.isFinite(report?.order?.totalRm)
+      ? `Pricing finished at RM${report.order.totalRm}, but the invoice was not saved.`
+      : report?.stage === "extract"
+        ? "Invoice creation did not start."
+        : report?.stage === "price"
+          ? "Invoice creation did not start because pricing did not finish."
+          : "No invoice created yet.";
+    appendParagraph(elements.invoice, message, "dashboard-muted");
+    return;
+  }
+
+  const lines = document.createElement("ul");
+  for (const line of report.invoice.lines) {
+    const item = document.createElement("li");
+    item.textContent = `${line.units} × ${line.name}: RM${line.subtotalRm}`;
+    lines.append(item);
+  }
+  elements.invoice.append(lines);
+  for (const note of report.invoice.notes) appendParagraph(elements.invoice, `Note: ${note.text}`);
+  const fulfilment = report.invoice.fulfilment;
+  appendParagraph(
+    elements.invoice,
+    fulfilment.method === "unknown"
+      ? "Fulfilment: not specified"
+      : `${fulfilment.method === "pickup" ? "Pickup" : "Delivery"} requested${fulfilment.requestedTime ? `: ${fulfilment.requestedTime}` : ""}`,
+  );
+  appendParagraph(elements.invoice, `Total: RM${report.invoice.totalRm}`, "dashboard-total");
+}
+
+function appendParagraph(parent, text, className = "") {
+  const paragraph = document.createElement("p");
+  paragraph.textContent = text;
+  if (className) paragraph.className = className;
+  parent.append(paragraph);
+}
+
+function stageLabel(stage) {
+  return ({ extract: "extraction", price: "pricing", invoice: "invoice", reply: "reply" })[stage] || "the workflow";
+}
+
+function appendMessage(role, content, status = "") {
+  const row = document.createElement("div");
+  row.className = `message-row ${role === "customer" ? "customer-row" : "bot-row"}`;
+  if (status) row.dataset.state = status;
+
+  const meta = document.createElement("div");
+  meta.className = "message-meta";
+  const name = document.createElement("span");
+  name.textContent = role === "customer" ? "Customer" : "Kak Nor Bot";
+  const detail = document.createElement("span");
+  detail.textContent = role === "customer" ? "Now" : "Assistant";
+  meta.append(name, detail);
+
+  const bubble = document.createElement("div");
+  bubble.className = `message-bubble ${role === "customer" ? "customer-bubble" : "bot-bubble"}`;
+  const response = document.createElement("p");
+  response.textContent = content;
+  if (role === "assistant") response.setAttribute("aria-live", "polite");
+  const typing = document.createElement("div");
+  typing.className = "typing-indicator";
+  typing.hidden = status !== "running";
+  typing.setAttribute("aria-label", "Bot is responding");
+  typing.append(document.createElement("span"), document.createElement("span"), document.createElement("span"));
+  if (role === "assistant") bubble.append(typing, response);
+  else bubble.append(response);
+  row.append(meta, bubble);
+  elements.conversation.append(row);
+  row.scrollIntoView({ block: "nearest" });
+  return { row, response, typing };
+}
+
+function finishMessage(message, content) {
+  message.typing.hidden = true;
+  message.response.textContent = content;
 }
 
 async function completeLive(operation, input) {
@@ -187,13 +363,6 @@ async function completeLive(operation, input) {
     renderModel();
   }
   return result.output;
-}
-
-function isRecovered(response) {
-  return response.includes("RM162")
-    && response.includes("jangan letak gula lebih")
-    && response.includes("Pickup requested: esok petang")
-    && !/deliver(?:y|ed)?|5pm/i.test(response);
 }
 
 function setStatus(message, kind = "") {
