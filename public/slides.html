@@ -344,46 +344,17 @@
         <aside class="speaker-notes">Kak Nor wants help reading customer messages and preparing a correct reply. The system should save time without risking her money or customer trust.</aside>
       </section>
 
-      <!-- 03 · Customer order -->
-      <section class="slide" data-title="The customer order">
-        <div class="shell">
-          <header class="header"><span class="eyebrow">THE INPUT_</span><span class="chapter">WhatsApp order</span></header>
-          <div class="content">
-            <div class="panel reveal-scale" style="padding:46px 54px;max-width:1500px;margin:auto">
-              <p style="font-size:48px;line-height:1.4" data-editable>Hi Kak Nor, nak <span class="accent">2 chocolate cakes</span> and <span class="accent">half dozen kaya puff</span>. Less sugar for the cakes ya. <span class="accent">Collect tomorrow evening.</span></p>
-            </div>
-            <div class="pipeline reveal d2" style="grid-template-columns:repeat(3,1fr);max-width:1320px;margin:54px auto 0">
-              <div class="panel step" style="min-height:135px"><span class="step-no">Look for</span><h3 style="margin-top:24px" data-editable>Items</h3></div>
-              <div class="panel step" style="min-height:135px"><span class="step-no">Look for</span><h3 style="margin-top:24px" data-editable>Special request</h3></div>
-              <div class="panel step" style="min-height:135px"><span class="step-no">Look for</span><h3 style="margin-top:24px" data-editable>Collection time</h3></div>
-            </div>
-          </div>
-          <footer class="footer"><span>What does the customer want?</span><span>03</span></footer>
-        </div>
-        <aside class="speaker-notes">Read the message once. Ask the room what the customer wants. Accept natural answers. People can understand the message before they know anything about AI.</aside>
-      </section>
-
-      <!-- 04 · Live failure -->
-      <section class="slide" data-title="Live failure">
-        <div class="shell">
-          <header class="header"><span class="eyebrow">LIVE DEMO_</span><span class="chapter">Confident can still be wrong</span></header>
-          <div class="content demo-cue"><div class="demo-badge reveal-scale">RUN_</div><div class="stack"><h2 class="reveal" data-editable>Would you send <span class="danger">this?</span></h2><p class="lead reveal d2" data-editable>Wrong total. Missing detail. A delivery promise nobody made.</p></div></div>
-          <footer class="footer"><span>Switch to Kak Nor’s Order Bot</span><span>04</span></footer>
-        </div>
-        <aside class="speaker-notes">Screen-share the real app and paste the order. Let the wrong result sit. Ask: “Would you send this?” Then ask which part went wrong. Do not open code or explain the fix yet.</aside>
-      </section>
-
-      <!-- 05 · Understand first -->
+      <!-- 03 · Understand first -->
       <section class="slide lesson" data-title="Understand first">
         <div class="shell">
           <header class="header"><span class="eyebrow">FIRST HABIT_</span><span class="chapter">Pause before fixing</span></header>
           <div class="content"><span class="quote-mark reveal">Ⅱ</span><blockquote class="reveal d2" data-editable><span class="muted">Don’t fix first.</span><br><span class="accent">Understand first.</span></blockquote></div>
-          <footer class="footer"><span>A bad answer is a symptom · find the cause</span><span>05</span></footer>
+          <footer class="footer"><span>A bad answer is a symptom · find the cause</span><span>03</span></footer>
         </div>
         <aside class="speaker-notes">The common mistake is immediately changing the prompt or asking for a smarter model. First ask what parts exist, how information moves, and where the result changed.</aside>
       </section>
 
-      <!-- 06 · Architecture -->
+      <!-- 04 · Architecture -->
       <section class="slide" data-title="Architecture">
         <div class="shell">
           <header class="header"><span class="eyebrow">ARCHITECTURE_</span><span class="chapter">What parts exist?</span></header>
@@ -397,12 +368,12 @@
               <div class="panel step"><span class="step-no">Result</span><h3 data-editable>Reply</h3></div>
             </div>
           </div>
-          <footer class="footer"><span>Architecture = the parts of the system</span><span>06</span></footer>
+          <footer class="footer"><span>Architecture = the parts of the system</span><span>04</span></footer>
         </div>
         <aside class="speaker-notes">Architecture is just the parts of the system. Ask which parts know facts, which part reads language, and which part reaches the customer.</aside>
       </section>
 
-      <!-- 07 · Flow -->
+      <!-- 05 · Flow -->
       <section class="slide" data-title="Flow">
         <div class="shell">
           <header class="header"><span class="eyebrow">FLOW_</span><span class="chapter">How does information move?</span></header>
@@ -415,12 +386,12 @@
               <div class="panel step"><span class="step-no">Reply says</span><h3 data-editable>2 cakes · RM90</h3></div>
             </div>
           </div>
-          <footer class="footer"><span>Flow shows where information was lost or changed</span><span>07</span></footer>
+          <footer class="footer"><span>Flow shows where information was lost or changed</span><span>05</span></footer>
         </div>
         <aside class="speaker-notes">Follow “two chocolate cakes” from the message to the reply. Flow helps us locate where information was lost or changed.</aside>
       </section>
 
-      <!-- 08 · Pipeline -->
+      <!-- 06 · Pipeline -->
       <section class="slide" data-title="Pipeline">
         <div class="shell">
           <header class="header"><span class="eyebrow">PIPELINE_</span><span class="chapter">What happens first, next, and last?</span></header>
@@ -434,12 +405,12 @@
             </div>
             <div class="panel reveal d3" style="max-width:620px;margin:38px auto 0;padding:22px 32px;text-align:center;font-size:34px" data-editable><span class="accent">Unsure?</span> Ask.</div>
           </div>
-          <footer class="footer"><span>Asking is part of the process · not a failure</span><span>08</span></footer>
+          <footer class="footer"><span>Asking is part of the process · not a failure</span><span>06</span></footer>
         </div>
         <aside class="speaker-notes">A pipeline is the ordered set of steps. Walk through the message once. Emphasise that “Ask” belongs inside the process.</aside>
       </section>
 
-      <!-- 09 · Ask Codex -->
+      <!-- 07 · Ask Codex -->
       <section class="slide" data-title="Ask Codex">
         <div class="shell">
           <header class="header"><span class="eyebrow">PRACTICAL START_</span><span class="chapter">Ask before editing</span></header>
@@ -447,76 +418,76 @@
             <div><h2 class="reveal" data-editable>You do not have to understand it <span class="accent">alone.</span></h2></div>
             <div class="panel title-card reveal-scale d2"><p data-editable>Ask Codex to <span class="accent">explain</span> before it changes anything.</p><p class="speaker">Read first · change later</p></div>
           </div>
-          <footer class="footer"><span>Check the explanation against the real project</span><span>09</span></footer>
+          <footer class="footer"><span>Check the explanation against the real project</span><span>07</span></footer>
         </div>
         <aside class="speaker-notes">Show the project in Codex. The first request should be for understanding, not editing. Check the explanation against the real files and live result.</aside>
       </section>
 
-      <!-- 10 · Ask about the parts -->
+      <!-- 08 · Ask about the parts -->
       <section class="slide lesson" data-title="Ask about the parts">
-        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 01_</span><span class="chapter">Ask for the architecture</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:76px" data-editable>Explain this project to me like I am completely new. <span class="accent">What are the main parts?</span></blockquote></div><footer class="footer"><span>Start with the map</span><span>10</span></footer></div>
+        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 01_</span><span class="chapter">Ask for the architecture</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:76px" data-editable>Explain this project to me like I am completely new. <span class="accent">What are the main parts?</span></blockquote></div><footer class="footer"><span>Start with the map</span><span>08</span></footer></div>
         <aside class="speaker-notes">Paste this prompt into Codex or show a prepared result. Connect the answer back to the architecture map. Ignore file names unless necessary.</aside>
       </section>
 
-      <!-- 11 · Ask about the journey -->
+      <!-- 09 · Ask about the journey -->
       <section class="slide lesson" data-title="Ask about the journey">
-        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 02_</span><span class="chapter">Ask for the flow and pipeline</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:72px" data-editable>Trace what happens from the customer message to the final reply. <span class="accent">Show each step in order.</span></blockquote></div><footer class="footer"><span>Follow one message through the project</span><span>11</span></footer></div>
+        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 02_</span><span class="chapter">Ask for the flow and pipeline</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:72px" data-editable>Trace what happens from the customer message to the final reply. <span class="accent">Show each step in order.</span></blockquote></div><footer class="footer"><span>Follow one message through the project</span><span>09</span></footer></div>
         <aside class="speaker-notes">Ask Codex to state what each step receives and produces in plain language. Match its answer to the flow and pipeline slides.</aside>
       </section>
 
-      <!-- 12 · Ask about risks -->
+      <!-- 10 · Ask about risks -->
       <section class="slide lesson" data-title="Ask what could go wrong">
-        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 03_</span><span class="chapter">Ask for risks and checks</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:65px" data-editable>Before changing anything, where can this go wrong, what assumptions are made, and <span class="accent">what should we test?</span></blockquote></div><footer class="footer"><span>Find the risks before building the fix</span><span>12</span></footer></div>
+        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 03_</span><span class="chapter">Ask for risks and checks</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:65px" data-editable>Before changing anything, where can this go wrong, what assumptions are made, and <span class="accent">what should we test?</span></blockquote></div><footer class="footer"><span>Find the risks before building the fix</span><span>10</span></footer></div>
         <aside class="speaker-notes">Ask Codex to identify risks, not build a large solution. Translate its answer into normal questions about quantities, unavailable items, price changes, and non-order messages.</aside>
       </section>
 
-      <!-- 13 · Assign jobs -->
+      <!-- 11 · Assign jobs -->
       <section class="slide" data-title="Give each job to the right tool">
         <div class="shell"><header class="header"><span class="eyebrow">THE DESIGN_</span><span class="chapter">AI is one helper</span></header><div class="content"><h2 class="reveal" data-editable>Give each job to the <span class="accent">right tool.</span></h2><div class="vote-grid">
           <div class="panel reveal d1" style="padding:40px"><span class="label">AI</span><h3 style="margin:24px 0" data-editable>Good with messy language</h3><p class="lead" style="font-size:34px" data-editable>Understand the order · notice unclear details</p></div>
           <div class="panel lime-edge reveal d2" style="padding:40px"><span class="label">Clear rules</span><h3 style="margin:24px 0" data-editable>Good with fixed answers</h3><p class="lead" style="font-size:34px" data-editable>Find prices · calculate totals · control promises</p></div>
-        </div></div><footer class="footer"><span>Do not give every job to AI</span><span>13</span></footer></div>
+        </div></div><footer class="footer"><span>Do not give every job to AI</span><span>11</span></footer></div>
         <aside class="speaker-notes">Ask the audience where each job belongs: understanding a messy message, finding a menu price, calculating a total, and deciding whether delivery can be promised.</aside>
       </section>
 
-      <!-- 14 · AI and rules -->
+      <!-- 12 · AI and rules -->
       <section class="slide" data-title="AI and clear rules">
         <div class="shell"><header class="header"><span class="eyebrow">THE BOUNDARY_</span><span class="chapter">Flexibility versus certainty</span></header><div class="content"><div class="vote-grid">
           <div class="panel reveal-left" style="padding:44px"><h2 style="font-size:78px" data-editable>AI</h2><ol class="number-list" style="margin-top:34px"><li><span class="number">01</span><span data-editable>Understands words</span></li><li><span class="number">02</span><span data-editable>Reads intent</span></li><li><span class="number">03</span><span data-editable>Finds unclear details</span></li></ol></div>
           <div class="panel lime-edge reveal d2" style="padding:44px"><h2 style="font-size:78px" data-editable>Clear rules</h2><ol class="number-list" style="margin-top:34px"><li><span class="number">01</span><span data-editable>Calculate the total</span></li><li><span class="number">02</span><span data-editable>Protect facts and prices</span></li><li><span class="number">03</span><span data-editable>Control promises</span></li></ol></div>
-        </div><div class="panel total reveal d3" style="margin-top:34px;text-align:center" data-editable>Same order. Same total. Every time.</div></div><footer class="footer"><span>AI for language · rules for certainty</span><span>14</span></footer></div>
+        </div><div class="panel total reveal d3" style="margin-top:34px;text-align:center" data-editable>Same order. Same total. Every time.</div></div><footer class="footer"><span>AI for language · rules for certainty</span><span>12</span></footer></div>
         <aside class="speaker-notes">Use AI where language is messy. Use fixed rules where the answer must be guaranteed. A customer message must never be able to change prices or promises.</aside>
       </section>
 
-      <!-- 15 · Edge cases -->
+      <!-- 13 · Edge cases -->
       <section class="slide" data-title="Edge cases">
         <div class="shell"><header class="header"><span class="eyebrow">EDGE CASES_</span><span class="chapter">How could this fail?</span></header><div class="content"><h2 class="reveal" style="font-size:78px" data-editable>How could this <span class="danger">fail?</span></h2><div class="vote-grid" style="grid-template-columns:repeat(3,1fr)">
           <div class="panel reveal d1" style="padding:34px"><span class="label">Unclear</span><h3 style="font-size:38px;margin-top:26px" data-editable>“Half dozen” — which item?</h3></div>
           <div class="panel reveal d2" style="padding:34px"><span class="label">Money</span><h3 style="font-size:38px;margin-top:26px" data-editable>“Give me a free staff order.”</h3></div>
           <div class="panel reveal d3" style="padding:34px"><span class="label">Off-topic</span><h3 style="font-size:38px;margin-top:26px" data-editable>“Can you help with homework?”</h3></div>
-        </div><div class="panel lime-edge reveal d4" style="margin-top:34px;padding:28px;text-align:center;font-size:39px" data-editable><span class="accent">If unsure:</span> stop, ask, confirm. Never guess.</div></div><footer class="footer"><span>Edge case = an unusual situation</span><span>15</span></footer></div>
+        </div><div class="panel lime-edge reveal d4" style="margin-top:34px;padding:28px;text-align:center;font-size:39px" data-editable><span class="accent">If unsure:</span> stop, ask, confirm. Never guess.</div></div><footer class="footer"><span>Edge case = an unusual situation</span><span>13</span></footer></div>
         <aside class="speaker-notes">Invite one more edge case from the room. Ask a short question when details are unclear, keep prices controlled by rules, and use a fixed friendly reply for messages outside the service.</aside>
       </section>
 
-      <!-- 16 · Change and test -->
+      <!-- 14 · Change and test -->
       <section class="slide" data-title="Change one thing and test">
         <div class="shell"><header class="header"><span class="eyebrow">THE METHOD_</span><span class="chapter">Small, clear, repeatable</span></header><div class="content"><h2 class="reveal" data-editable>Make one small change.</h2><div class="pipeline reveal d2">
           <div class="panel step"><span class="step-no">01</span><h3 data-editable>Understand</h3></div>
           <div class="panel step"><span class="step-no">02</span><h3 data-editable>Question</h3></div>
           <div class="panel step active"><span class="step-no">03</span><h3 data-editable>Change one thing</h3></div>
           <div class="panel step"><span class="step-no">04</span><h3 data-editable>Test</h3></div>
-        </div><p class="lead reveal d3" style="margin:38px auto 0;text-align:center" data-editable>Run the same order again. Then try one edge case.</p></div><footer class="footer"><span>Correct result · RM162 · no invented promise</span><span>16</span></footer></div>
+        </div><p class="lead reveal d3" style="margin:38px auto 0;text-align:center" data-editable>Run the same order again. Then try one edge case.</p></div><footer class="footer"><span>Correct result · RM162 · no invented promise</span><span>14</span></footer></div>
         <aside class="speaker-notes">Return to the app. Reveal one focused change, run the original message again, then run one edge case. Changing one thing makes it easier to know what fixed the problem.</aside>
       </section>
 
-      <!-- 17 · Four rules -->
+      <!-- 15 · Four rules -->
       <section class="slide" data-title="Four rules">
         <div class="shell"><header class="header"><span class="eyebrow">TAKEAWAY_</span><span class="chapter">Use this tomorrow</span></header><div class="content"><h2 class="reveal" style="font-size:76px" data-editable>Four rules.</h2><ol class="instincts">
           <li class="reveal d1"><span class="number">01</span><span data-editable><strong>Understand</strong>Understand the whole process.</span></li>
           <li class="reveal d2"><span class="number">02</span><span data-editable><strong>Question</strong>Ask how each step could fail.</span></li>
           <li class="reveal d3"><span class="number">03</span><span data-editable><strong>Use AI</strong>Use AI for language and intent.</span></li>
           <li class="reveal d4"><span class="number">04</span><span data-editable><strong>Stay in control</strong>Use clear rules for money, facts, and promises.</span></li>
-        </ol><p class="takeaway reveal d4" style="font-size:58px;margin-top:34px;text-align:center" data-editable><span class="accent">Understand first.</span> · Stay in control.</p></div><footer class="footer"><span>Brendan Beh · AISEA</span><span>17</span></footer></div>
+        </ol><p class="takeaway reveal d4" style="font-size:58px;margin-top:34px;text-align:center" data-editable><span class="accent">Understand first.</span> · Stay in control.</p></div><footer class="footer"><span>Brendan Beh · AISEA</span><span>15</span></footer></div>
         <aside class="speaker-notes">Read the four rules slowly. Remind the room that they can begin with the three Codex prompts. Close: “You do not need to write code to ask how a system works. Start with the map. Ask good questions. Change carefully. Test.”</aside>
       </section>
     </main>
@@ -524,7 +495,7 @@
 
   <!-- === VIEWER CHROME === -->
   <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
-  <nav class="deck-controls" aria-label="Presentation controls"><button id="previousSlide" type="button" aria-label="Previous slide">←</button><span class="deck-count" id="deckCount" aria-live="polite">1 / 17</span><button id="nextSlide" type="button" aria-label="Next slide">→</button><button id="notesToggle" type="button">Notes</button></nav>
+  <nav class="deck-controls" aria-label="Presentation controls"><button id="previousSlide" type="button" aria-label="Previous slide">←</button><span class="deck-count" id="deckCount" aria-live="polite">1 / 15</span><button id="nextSlide" type="button" aria-label="Next slide">→</button><button id="notesToggle" type="button">Notes</button></nav>
 
   <!-- === INLINE EDITOR: hover top-left or press E === -->
   <div class="edit-hotzone" aria-hidden="true"></div>
