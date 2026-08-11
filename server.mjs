@@ -141,7 +141,11 @@ async function serveStatic(req, res, pathname) {
     json(res, 400, { error: "Invalid URL." });
     return;
   }
-  const relative = decoded === "/" ? "index.html" : decoded.replace(/^\/+/, "");
+  const relative = decoded === "/"
+    ? "index.html"
+    : decoded === "/menu" || decoded === "/menu/"
+      ? "menu.html"
+      : decoded.replace(/^\/+/, "");
   const filePath = resolve(PUBLIC_DIR, relative);
   if (filePath !== PUBLIC_DIR.slice(0, -1) && !filePath.startsWith(PUBLIC_DIR.endsWith(sep) ? PUBLIC_DIR : `${PUBLIC_DIR}${sep}`)) {
     json(res, 404, { error: "Not found." });

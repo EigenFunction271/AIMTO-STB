@@ -224,6 +224,15 @@
     .kak-nor-card { overflow: hidden; }
     .kak-nor-card img { border-bottom: 1px solid var(--line); display: block; height: 520px; object-fit: cover; object-position: center 40%; width: 100%; }
     .kak-nor-card figcaption { color: var(--muted); font-size: 30px; line-height: 1.35; padding: 28px 34px 32px; }
+    .menu-showcase { align-items: stretch; display: grid; gap: 42px; grid-template-columns: 1.18fr .82fr; }
+    .menu-photo { min-height: 660px; overflow: hidden; }
+    .menu-photo img { display: block; height: 100%; object-fit: cover; width: 100%; }
+    .menu-board { padding: 38px 42px; }
+    .menu-board h2 { font-size: 68px; margin: 15px 0 26px; }
+    .slide-menu-list { display: grid; gap: 13px; list-style: none; }
+    .slide-menu-list li { align-items: center; border-bottom: 1px solid var(--line); display: grid; font-size: 26px; gap: 18px; grid-template-columns: 1fr auto; padding: 13px 0; }
+    .slide-menu-list strong { color: var(--lime); font: 800 24px var(--mono); }
+    .slide-menu-list small { color: var(--muted); display: block; font-size: 20px; margin-top: 3px; }
     .demo-cue { align-items: center; display: grid; gap: 70px; grid-template-columns: .8fr 1.2fr; }
     .demo-badge { align-items: center; aspect-ratio: 1; background: var(--lime); color: var(--canvas); display: flex; font: 800 44px var(--mono); justify-content: center; width: 330px; }
     .demo-cue h2 { font-size: 130px; }
@@ -384,7 +393,7 @@
   </style>
 </head>
 <body>
-  <!-- === 19-SLIDE BEGINNER DECK === -->
+  <!-- === 20-SLIDE BEGINNER DECK === -->
   <div class="deck-viewport">
     <main class="deck-stage" id="deckStage">
 
@@ -422,7 +431,30 @@
         <aside class="speaker-notes">Kak Nor wants help reading customer messages and preparing a correct reply. The system should save time without risking her money or customer trust.</aside>
       </section>
 
-      <!-- 03 · Reference input -->
+      <!-- 03 · Kak Nor's menu -->
+      <section class="slide" data-title="Kak Nor's menu">
+        <div class="shell">
+          <header class="header"><span class="eyebrow">THE MENU_</span><span class="chapter">Prices are facts</span></header>
+          <div class="content menu-showcase">
+            <figure class="panel menu-photo reveal-left"><img src="./assets/slides/kak-nor-menu.png" alt="Chocolate cake, kaya puffs, spicy curry puffs, kek lapis, and roti kaya arranged on a bakery counter"></figure>
+            <div class="panel menu-board reveal d2">
+              <span class="label">Kak Nor's Kitchen</span>
+              <h2 data-editable>Menu</h2>
+              <ul class="slide-menu-list">
+                <li><span data-editable>Kek Coklat<small>Each</small></span><strong>RM45</strong></li>
+                <li><span data-editable>Kaya Puff<small>Half-dozen · 6 pcs</small></span><strong>RM12</strong></li>
+                <li><span data-editable>Karipap Pedas<small>Half-dozen · 6 pcs</small></span><strong>RM10</strong></li>
+                <li><span data-editable>Kek Lapis<small>Each</small></span><strong>RM60</strong></li>
+                <li><span data-editable>Roti Kaya<small>One loaf</small></span><strong>RM15</strong></li>
+              </ul>
+            </div>
+          </div>
+          <footer class="footer"><span>AI reads the order · the menu controls the price</span><span>03</span></footer>
+        </div>
+        <aside class="speaker-notes">Introduce the menu as the source of truth. The AI may interpret the customer's words, but it must not invent an item, selling unit, or price. Open the same menu at /menu in the local app if the room needs a closer look.</aside>
+      </section>
+
+      <!-- 04 · Reference input -->
       <section class="slide" data-title="Reference input">
         <div class="shell">
           <header class="header"><span class="eyebrow">REFERENCE INPUT_</span><span class="chapter">This is the order · not the failure</span></header>
@@ -433,12 +465,12 @@
               <div class="panel reference-note reveal d3"><span class="label">Look for</span><h3 data-editable>Items · note · pickup</h3><p data-editable>Kaya Puff has no quantity. That is a business question the system must handle without inventing a piece count.</p></div>
             </div>
           </div>
-          <footer class="footer"><span>Read the same reference before every run</span><span>03</span></footer>
+          <footer class="footer"><span>Read the same reference before every run</span><span>04</span></footer>
         </div>
         <aside class="speaker-notes">Read the exact order aloud. Ask the room to name the three items, the sugar note, and the pickup request. Be explicit: this customer message is the reference input, not the failure.</aside>
       </section>
 
-      <!-- 04 · Known facts -->
+      <!-- 05 · Known facts -->
       <section class="slide" data-title="Known facts">
         <div class="shell">
           <header class="header"><span class="eyebrow">REFERENCE ANSWER_</span><span class="chapter">Known facts before we run</span></header>
@@ -456,12 +488,12 @@
               <p class="lead" style="font-size:31px;margin:30px 8px 0" data-editable>Keep the sugar note. Keep pickup “esok petang.” Make no delivery or timing promise.</p>
             </div>
           </div>
-          <footer class="footer"><span>RM90 + RM12 + RM60 = RM162</span><span>04</span></footer>
+          <footer class="footer"><span>RM90 + RM12 + RM60 = RM162</span><span>05</span></footer>
         </div>
         <aside class="speaker-notes">State the selling-unit rule before the first run so the room can fairly spot the bad assumption. This is the reference answer used to judge every result.</aside>
       </section>
 
-      <!-- 05 · Run the live app -->
+      <!-- 06 · Run the live app -->
       <section class="slide" data-title="Let's see what the AI does">
         <div class="shell">
           <header class="header"><span class="eyebrow">LIVE RUN_</span><span class="chapter">Same input · real model</span></header>
@@ -469,12 +501,12 @@
             <div class="demo-badge reveal-scale">LIVE</div>
             <div class="stack"><h2 class="reveal" data-editable>Let’s see what the <span class="accent">AI does.</span></h2><p class="lead reveal d2" data-editable>Switch to the app. Run the reference input once. Watch before diagnosing.</p></div>
           </div>
-          <footer class="footer"><span>Do not predict the answer · observe it</span><span>05</span></footer>
+          <footer class="footer"><span>Do not predict the answer · observe it</span><span>06</span></footer>
         </div>
         <aside class="speaker-notes">Switch to the live app with OpenAI selected. Enter the key privately, then run the exact reference input. Do not tell the room what the model will do. If the provider, network, or quota fails, use Fixture only as a clearly labelled fallback.</aside>
       </section>
 
-      <!-- 06 · Audit the live response -->
+      <!-- 07 · Audit the live response -->
       <section class="slide" data-title="Audit the live response">
         <div class="shell">
           <header class="header"><span class="eyebrow">AUDIT_</span><span class="chapter">Compare result with known facts</span></header>
@@ -488,22 +520,22 @@
             </div>
             <div class="panel audit-rule reveal d4"><span class="success">PASS</span><span class="amber">NEEDS WORK</span><span class="muted">NOT REACHED</span><span class="muted" data-editable>Judge only stages this run reached.</span></div>
           </div>
-          <footer class="footer"><span>Observed result · not a manufactured failure</span><span>06</span></footer>
+          <footer class="footer"><span>Observed result · not a manufactured failure</span><span>07</span></footer>
         </div>
         <aside class="speaker-notes">Return to the deck with the live result still available. Let the room answer only from evidence: PASS, NEEDS WORK, or NOT REACHED. The pipeline stops at its first unmet stage, so later checks remain NOT REACHED until a rerun reaches them. A correct-looking answer can pass its content check even when the workshop pipeline stops before trusting it; make the boundary repair to continue, but do not relabel the content as a failure.</aside>
       </section>
 
-      <!-- 07 · Understand first -->
+      <!-- 08 · Understand first -->
       <section class="slide lesson" data-title="Understand first">
         <div class="shell">
           <header class="header"><span class="eyebrow">FIRST HABIT_</span><span class="chapter">Pause before fixing</span></header>
           <div class="content"><span class="quote-mark reveal">Ⅱ</span><blockquote class="reveal d2" data-editable><span class="muted">Don’t fix first.</span><br><span class="accent">Understand first.</span></blockquote></div>
-          <footer class="footer"><span>An answer is evidence · find its owner</span><span>07</span></footer>
+          <footer class="footer"><span>An answer is evidence · find its owner</span><span>08</span></footer>
         </div>
         <aside class="speaker-notes">Whether the response passed or failed, first ask what parts exist, how information moves, and which part owns each responsibility.</aside>
       </section>
 
-      <!-- 08 · Architecture -->
+      <!-- 09 · Architecture -->
       <section class="slide" data-title="Architecture">
         <div class="shell">
           <header class="header"><span class="eyebrow">ARCHITECTURE_</span><span class="chapter">What parts exist?</span></header>
@@ -516,12 +548,12 @@
               <div class="panel step"><span class="step-no">Result</span><h3 data-editable>Reply</h3></div>
             </div>
           </div>
-          <footer class="footer"><span>Architecture = the parts of the system</span><span>08</span></footer>
+          <footer class="footer"><span>Architecture = the parts of the system</span><span>09</span></footer>
         </div>
         <aside class="speaker-notes">Architecture is the parts. Ask which part reads language, which stores known facts, which performs controlled work, and which reaches the customer.</aside>
       </section>
 
-      <!-- 09 · Flow -->
+      <!-- 10 · Flow -->
       <section class="slide" data-title="Flow">
         <div class="shell">
           <header class="header"><span class="eyebrow">FLOW_</span><span class="chapter">How does information move?</span></header>
@@ -534,12 +566,12 @@
               <div class="panel step"><span class="step-no">Reply</span><h3 data-editable>Promise</h3></div>
             </div>
           </div>
-          <footer class="footer"><span>Flow shows where a fact changed</span><span>09</span></footer>
+          <footer class="footer"><span>Flow shows where a fact changed</span><span>10</span></footer>
         </div>
         <aside class="speaker-notes">Follow the same order from customer message to reply. This locates the stage that owns an observed result without assuming it failed.</aside>
       </section>
 
-      <!-- 10 · Responsibility map -->
+      <!-- 11 · Responsibility map -->
       <section class="slide" data-title="Responsibility map">
         <div class="shell">
           <header class="header"><span class="eyebrow">RESPONSIBILITY_</span><span class="chapter">Who owns each answer?</span></header>
@@ -549,30 +581,30 @@
             <div class="panel responsibility-card reveal d3"><span class="tag amber">Code</span><h3 data-editable>Protect</h3><p data-editable>Calculate money and preserve facts.</p></div>
             <div class="panel responsibility-card reveal d4"><span class="tag amber">Reply</span><h3 data-editable>Promise</h3><p data-editable>Say only what the business knows.</p></div>
           </div></div>
-          <footer class="footer"><span>Responsibility is not blame · it is where to look</span><span>10</span></footer>
+          <footer class="footer"><span>Responsibility is not blame · it is where to look</span><span>11</span></footer>
         </div>
         <aside class="speaker-notes">A responsibility boundary tells us where to inspect when a check needs work. Amber means “watch this boundary,” not “this code has failed.”</aside>
       </section>
 
-      <!-- 11 · Ask Codex: the parts -->
+      <!-- 12 · Ask Codex: the parts -->
       <section class="slide lesson" data-title="Ask Codex: the parts">
-        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 01_</span><span class="chapter">Ask for the architecture</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:76px" data-editable>Explain this project to me like I am completely new. <span class="accent">What are the main parts?</span></blockquote></div><footer class="footer"><span>Start with the map</span><span>11</span></footer></div>
+        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 01_</span><span class="chapter">Ask for the architecture</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:76px" data-editable>Explain this project to me like I am completely new. <span class="accent">What are the main parts?</span></blockquote></div><footer class="footer"><span>Start with the map</span><span>12</span></footer></div>
         <aside class="speaker-notes">Ask Codex to explain before editing. Connect its answer to the architecture and responsibility maps. Check the explanation against the real files.</aside>
       </section>
 
-      <!-- 12 · Ask Codex: the journey -->
+      <!-- 13 · Ask Codex: the journey -->
       <section class="slide lesson" data-title="Ask Codex: the journey">
-        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 02_</span><span class="chapter">Ask for the flow</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:72px" data-editable>Trace what happens from the customer message to the final reply. <span class="accent">Show each step in order.</span></blockquote></div><footer class="footer"><span>Follow one message through the project</span><span>12</span></footer></div>
+        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 02_</span><span class="chapter">Ask for the flow</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:72px" data-editable>Trace what happens from the customer message to the final reply. <span class="accent">Show each step in order.</span></blockquote></div><footer class="footer"><span>Follow one message through the project</span><span>13</span></footer></div>
         <aside class="speaker-notes">Ask Codex what each step receives and produces. Match that answer to the live order journey.</aside>
       </section>
 
-      <!-- 13 · Ask Codex: the risks -->
+      <!-- 14 · Ask Codex: the risks -->
       <section class="slide lesson" data-title="Ask Codex: the risks">
-        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 03_</span><span class="chapter">Ask for risks and checks</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:65px" data-editable>Before changing anything, where can this go wrong, what assumptions are made, and <span class="accent">what should we test?</span></blockquote></div><footer class="footer"><span>Find risks before proposing a repair</span><span>13</span></footer></div>
+        <div class="shell"><header class="header"><span class="eyebrow">ASK CODEX · 03_</span><span class="chapter">Ask for risks and checks</span></header><div class="content"><span class="quote-mark reveal">“</span><blockquote class="reveal d2" style="font-size:65px" data-editable>Before changing anything, where can this go wrong, what assumptions are made, and <span class="accent">what should we test?</span></blockquote></div><footer class="footer"><span>Find risks before proposing a repair</span><span>14</span></footer></div>
         <aside class="speaker-notes">Ask for risks, not a large rewrite. Translate the answer into the four fixed audit questions. The live response decides which risks need attention.</aside>
       </section>
 
-      <!-- 14 · Checkpoint 1: Understanding -->
+      <!-- 15 · Checkpoint 1: Understanding -->
       <section class="slide" data-title="Checkpoint 1: Understanding">
         <div class="shell">
           <header class="header"><span class="eyebrow">CHECKPOINT 01_</span><span class="chapter">PASS · NEEDS WORK · NOT REACHED</span></header>
@@ -590,12 +622,12 @@
               <div class="panel path path-unreached reveal d4"><h3>NOT REACHED</h3><p data-editable>No model result yet. Run the bot before judging.</p></div>
             </div>
           </div>
-          <footer class="footer"><span>Question · owner · evidence · next action</span><span>14</span></footer>
+          <footer class="footer"><span>Question · owner · evidence · next action</span><span>15</span></footer>
         </div>
         <aside class="speaker-notes">Open public/workflow/stages/01-understanding.js. Judge only the observed response. PASS: celebrate that this model understood this case. NEEDS WORK: identify the extraction boundary, then conditionally reveal extractBroken → extractFixed and rerun. NOT REACHED: there is no usable model result yet; resolve the live provider issue or use Fixture only for provider, network, or quota failure. Fallback fixture example only: the controlled response interprets Kaya Puff as an individual piece while retaining the note and pickup.</aside>
       </section>
 
-      <!-- 15 · Checkpoint 2: Money -->
+      <!-- 16 · Checkpoint 2: Money -->
       <section class="slide" data-title="Checkpoint 2: Money">
         <div class="shell">
           <header class="header"><span class="eyebrow">CHECKPOINT 02_</span><span class="chapter">PASS · NEEDS WORK · NOT REACHED</span></header>
@@ -613,12 +645,12 @@
               <div class="panel path path-unreached reveal d4"><h3>NOT REACHED</h3><p data-editable>Understanding stopped first. Do not judge money yet.</p></div>
             </div>
           </div>
-          <footer class="footer"><span>Language can vary · money must not</span><span>15</span></footer>
+          <footer class="footer"><span>Language can vary · money must not</span><span>16</span></footer>
         </div>
         <aside class="speaker-notes">Open public/workflow/stages/02-money.js. PASS: show the arithmetic and say this run held. If the workshop pipeline still stops before trusting that answer, activate priceFixed to continue without calling the observed total wrong. NEEDS WORK: conditionally reveal priceBroken → priceFixed, then rerun. NOT REACHED: extraction stopped first; repair and rerun before judging money. Fallback fixture example only: the controlled pricing response is RM159.</aside>
       </section>
 
-      <!-- 16 · Checkpoint 3: Handoff -->
+      <!-- 17 · Checkpoint 3: Handoff -->
       <section class="slide" data-title="Checkpoint 3: Handoff">
         <div class="shell">
           <header class="header"><span class="eyebrow">CHECKPOINT 03_</span><span class="chapter">PASS · NEEDS WORK · NOT REACHED</span></header>
@@ -636,12 +668,12 @@
               <div class="panel path path-unreached reveal d4"><h3>NOT REACHED</h3><p data-editable>An earlier stage stopped. Do not judge the handoff yet.</p></div>
             </div>
           </div>
-          <footer class="footer"><span>Preserve every required fact at the handoff</span><span>16</span></footer>
+          <footer class="footer"><span>Preserve every required fact at the handoff</span><span>17</span></footer>
         </div>
         <aside class="speaker-notes">Open public/workflow/stages/03-handoff.js. PASS: point to each surviving fact. NEEDS WORK: conditionally reveal invoiceBroken → invoiceFixed and rerun. NOT REACHED: extraction or pricing stopped first; repair and rerun before judging the handoff. Fallback fixture example only: the controlled handoff keeps the total but omits the item lines, note, and pickup request.</aside>
       </section>
 
-      <!-- 17 · Checkpoint 4: Promise -->
+      <!-- 18 · Checkpoint 4: Promise -->
       <section class="slide" data-title="Checkpoint 4: Promise">
         <div class="shell">
           <header class="header"><span class="eyebrow">CHECKPOINT 04_</span><span class="chapter">PASS · NEEDS WORK · NOT REACHED</span></header>
@@ -659,12 +691,12 @@
               <div class="panel path path-unreached reveal d4"><h3>NOT REACHED</h3><p data-editable>An earlier stage stopped. Do not judge the promise yet.</p></div>
             </div>
           </div>
-          <footer class="footer"><span>A fluent sentence is not permission</span><span>17</span></footer>
+          <footer class="footer"><span>A fluent sentence is not permission</span><span>18</span></footer>
         </div>
         <aside class="speaker-notes">Open public/workflow/stages/04-promise.js. PASS: celebrate that this response stayed within the facts. NEEDS WORK: conditionally reveal replyBroken → replyFixed and rerun. NOT REACHED: extraction, pricing, or handoff stopped first; repair and rerun before judging the promise. Fallback fixture example only: the controlled reply changes pickup into delivery and invents a specific time.</aside>
       </section>
 
-      <!-- 18 · Run again -->
+      <!-- 19 · Run again -->
       <section class="slide" data-title="Run again">
         <div class="shell">
           <header class="header"><span class="eyebrow">RUN AGAIN_</span><span class="chapter">Variability is part of the lesson</span></header>
@@ -678,19 +710,19 @@
               </div>
             </div>
           </div>
-          <footer class="footer"><span>Same method · fresh evidence</span><span>18</span></footer>
+          <footer class="footer"><span>Same method · fresh evidence</span><span>19</span></footer>
         </div>
         <aside class="speaker-notes">Never manufacture a diagnosis. Later checks are NOT REACHED until the pipeline reaches them. Once all four checks pass, celebrate and try the harder prepared input. Compare every run using the same four questions and three statuses. Different model outputs are expected. Use Fixture only if provider, network, or quota failure blocks the live run.</aside>
       </section>
 
-      <!-- 19 · Four rules -->
+      <!-- 20 · Four rules -->
       <section class="slide" data-title="Four rules">
         <div class="shell"><header class="header"><span class="eyebrow">TAKEAWAY_</span><span class="chapter">Use this on the next build</span></header><div class="content"><h2 class="reveal" style="font-size:76px" data-editable>Four rules.</h2><ol class="instincts">
           <li class="reveal d1"><span class="number">01</span><span data-editable><strong>Understand</strong>Understand the whole process.</span></li>
           <li class="reveal d2"><span class="number">02</span><span data-editable><strong>Compare</strong>Compare the result to ground truth.</span></li>
           <li class="reveal d3"><span class="number">03</span><span data-editable><strong>Assign</strong>Assign each responsibility.</span></li>
           <li class="reveal d4"><span class="number">04</span><span data-editable><strong>Test</strong>Change carefully. Test again.</span></li>
-        </ol><p class="takeaway reveal d4" style="font-size:58px;margin-top:34px;text-align:center" data-editable><span class="accent">Understand.</span> Compare. Assign. Test again.</p></div><footer class="footer"><span>Brendan Beh · AISEA</span><span>19</span></footer></div>
+        </ol><p class="takeaway reveal d4" style="font-size:58px;margin-top:34px;text-align:center" data-editable><span class="accent">Understand.</span> Compare. Assign. Test again.</p></div><footer class="footer"><span>Brendan Beh · AISEA</span><span>20</span></footer></div>
         <aside class="speaker-notes">Close on the method: understand, compare to ground truth, assign responsibility, and test again. A beginner does not need to read every line of code to ask these questions well.</aside>
       </section>
     </main>
@@ -698,7 +730,7 @@
 
   <!-- === VIEWER CHROME === -->
   <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
-  <nav class="deck-controls" aria-label="Presentation controls"><button id="previousSlide" type="button" aria-label="Previous slide">←</button><span class="deck-count" id="deckCount" aria-live="polite">1 / 19</span><button id="nextSlide" type="button" aria-label="Next slide">→</button><button id="notesToggle" type="button">Notes</button></nav>
+  <nav class="deck-controls" aria-label="Presentation controls"><button id="previousSlide" type="button" aria-label="Previous slide">←</button><span class="deck-count" id="deckCount" aria-live="polite">1 / 20</span><button id="nextSlide" type="button" aria-label="Next slide">→</button><button id="notesToggle" type="button">Notes</button></nav>
 
   <!-- === INLINE EDITOR: hover top-left or press E === -->
   <div class="edit-hotzone" aria-hidden="true"></div>

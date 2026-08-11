@@ -180,14 +180,18 @@ h1 {
 
 .text-button,
 .quiet-button {
+  align-items: center;
   background: transparent;
   border-color: var(--line);
   border-radius: 999px;
+  display: inline-flex;
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 0.7rem;
   font-weight: 700;
+  justify-content: center;
   min-height: 40px;
   padding: 8px 15px;
+  text-decoration: none;
   text-transform: uppercase;
 }
 
@@ -677,6 +681,109 @@ select {
   width: 1px;
 }
 
+/* Standalone menu page: same visual system, no app JavaScript required. */
+.menu-page-shell {
+  margin: 0 auto;
+  max-width: 1380px;
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.menu-page-nav {
+  align-items: center;
+  display: flex;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  justify-content: space-between;
+  letter-spacing: 0.06em;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.menu-page-nav a {
+  color: var(--lime);
+  text-decoration: none;
+}
+
+.menu-page-nav a:hover {
+  text-decoration: underline;
+}
+
+.menu-page-nav span {
+  color: var(--muted);
+}
+
+.menu-page-card {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+  min-height: calc(100vh - 104px);
+  overflow: hidden;
+}
+
+.menu-page-art {
+  margin: 0;
+  min-height: 620px;
+}
+
+.menu-page-art img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.menu-page-copy {
+  align-self: center;
+  padding: 46px;
+}
+
+.menu-page-copy h1 {
+  font-size: clamp(4rem, 7vw, 7rem);
+  margin: 12px 0 34px;
+}
+
+.menu-page-list {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-page-list li {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  font-size: 1.3rem;
+  gap: 18px;
+  grid-template-columns: 1fr auto;
+  padding: 16px 0;
+}
+
+.menu-page-list small {
+  color: var(--muted);
+  display: block;
+  font-size: 0.85rem;
+  margin-top: 3px;
+}
+
+.menu-page-list strong {
+  color: var(--lime);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+.menu-page-rule {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.45;
+  margin: 30px 0 0;
+}
+
 @media (max-width: 680px) {
   .stage-shell {
     display: block;
@@ -734,6 +841,29 @@ select {
 
   .run-button {
     width: 100%;
+  }
+
+  .menu-page-shell {
+    padding: 0;
+  }
+
+  .menu-page-nav {
+    padding: 18px;
+  }
+
+  .menu-page-card {
+    border: 0;
+    border-radius: 0;
+    display: block;
+    min-height: 0;
+  }
+
+  .menu-page-art {
+    min-height: 320px;
+  }
+
+  .menu-page-copy {
+    padding: 34px 24px 48px;
   }
 }
 
