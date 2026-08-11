@@ -123,12 +123,14 @@ async function handleApi(req, res) {
     if (body.operation === "extract-fixed") {
       try {
         output = JSON.stringify(validateOrder(parseModelJson(rawOutput)), null, 2);
-      } catch {
+      } catch (error) {
+        console.error("[save-the-build] server extract-fixed validation failed", error, { rawOutput });
         throw Object.assign(new Error("The model returned an unusable order."), { status: 502 });
       }
     }
     json(res, 200, { output, model: MODELS[body.provider] });
   } catch (error) {
+    console.error("[save-the-build] /api/save-the-build failed", error);
     json(res, Number.isInteger(error.status) && error.status < 500 ? error.status : error.status === 504 ? 504 : 502, { error: error.message || "Request failed." });
   }
 }

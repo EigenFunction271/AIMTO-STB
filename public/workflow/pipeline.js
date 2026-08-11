@@ -18,6 +18,7 @@ export async function runOrderBotWith(pipeline, message, complete) {
       "The order was not saved.",
       "Pricing and invoice creation did not start.",
     );
+    console.error("[save-the-build] pipeline stopped at extract", { chatResponse: extracted.chatResponse });
     return { chatResponse: extracted.chatResponse, report };
   }
   report.order = extracted.value;
@@ -31,6 +32,7 @@ export async function runOrderBotWith(pipeline, message, complete) {
       "Pricing stopped before a trusted total was created.",
       "Invoice creation did not start.",
     );
+    console.error("[save-the-build] pipeline stopped at price", { chatResponse: priced.chatResponse });
     return { chatResponse: priced.chatResponse, report };
   }
   report.order = priced.value;
@@ -41,6 +43,7 @@ export async function runOrderBotWith(pipeline, message, complete) {
   if (!invoice.ok) {
     report.status = "stopped";
     report.events.push("The invoice was not saved because the handoff dropped required order details.");
+    console.error("[save-the-build] pipeline stopped at invoice", { chatResponse: invoice.chatResponse });
     return { chatResponse: invoice.chatResponse, report };
   }
   report.invoice = invoice.value;
@@ -51,6 +54,7 @@ export async function runOrderBotWith(pipeline, message, complete) {
   if (!reply.ok) {
     report.status = "stopped";
     report.events.push("The customer reply came from the model and may contain unsupported promises.");
+    console.error("[save-the-build] pipeline stopped at reply", { chatResponse: reply.chatResponse });
     return { chatResponse: reply.chatResponse, report };
   }
 

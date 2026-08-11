@@ -20,7 +20,7 @@ export const PROMPTS = Object.freeze({
 
 // Switch one line from Broken to Fixed, then rerun the same customer message.
 export const PIPELINE = Object.freeze({
-  extract: extractBroken, // Answer: extractFixed
+  extract: extractFixed, // Answer: extractFixed
   price: priceBroken,     // Answer: priceFixed
   invoice: invoiceBroken, // Answer: invoiceFixed
   reply: replyBroken,     // Answer: replyFixed

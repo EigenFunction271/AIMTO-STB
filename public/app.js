@@ -181,6 +181,7 @@ async function runBot() {
     pending.row.dataset.state = recovered ? "success" : "error";
     setStatus(recovered ? "Recovered" : "Stopped — needs repair", recovered ? "success" : "error");
   } catch (error) {
+    console.error("[save-the-build] runBot failed", error);
     const response = `Sorry, the bot could not run. ${safeError(error)}`;
     finishMessage(pending, response);
     state.history.push({ role: "assistant", content: response });

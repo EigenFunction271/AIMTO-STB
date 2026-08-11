@@ -11,8 +11,15 @@ export async function completeFromLive(operation, input, { provider, apiKey, onM
     body: JSON.stringify({ provider, apiKey, operation, input }),
   });
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.error || "The provider request failed.");
-  if (typeof result.output !== "string") throw new Error("The provider returned an unexpected response.");
+  if (!response.ok) {
+    const error = new Error(result.error || "The provider request failed.");
+    console.error("[save-the-build] completeFromLive failed", { operation, status: response.status, error: result.error });
+    throw error;
+  }
+  if (typeof result.output !== "string") {
+    console.error("[save-the-build] completeFromLive unexpected response", { operation, result });
+    throw new Error("The provider returned an unexpected response.");
+  }
   if (typeof result.model === "string" && result.model.length <= 100) onModel?.(result.model);
   return result.output;
 }

@@ -15,7 +15,8 @@ export async function extractBroken(message, complete) {
   const chatResponse = await complete("extract-broken", message);
   try {
     return { ok: true, value: validateOrder(parseModelJson(chatResponse)), chatResponse };
-  } catch {
+  } catch (error) {
+    console.error("[save-the-build] extractBroken: order parse/validate failed", error, { chatResponse });
     return { ok: false, chatResponse };
   }
 }
