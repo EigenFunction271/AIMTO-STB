@@ -226,8 +226,11 @@
     .host-card { padding: 42px 46px; }
     .host-card h3 { font-size: 58px; margin: 22px 0 24px; }
     .host-card > p { color: var(--muted); font-size: 30px; line-height: 1.4; }
-    .host-roles { border-top: 1px solid var(--line); display: grid; gap: 16px; margin-top: 34px; padding-top: 28px; }
+    .host-card-footer { align-items: end; border-top: 1px solid var(--line); display: grid; gap: 30px; grid-template-columns: 1fr 184px; margin-top: 34px; padding-top: 28px; }
+    .host-roles { display: grid; gap: 16px; }
     .host-roles span { font: 700 21px/1.35 var(--mono); text-transform: uppercase; }
+    .host-qr-link { color: var(--lime); display: grid; font: 700 15px/1.25 var(--mono); gap: 10px; text-align: center; text-decoration: none; }
+    .host-qr { background: #fff; border-radius: 10px; display: block; height: 184px; image-rendering: pixelated; padding: 8px; width: 184px; }
     .kak-nor-card { overflow: hidden; }
     .kak-nor-card img { border-bottom: 1px solid var(--line); display: block; height: 520px; object-fit: cover; object-position: center 40%; width: 100%; }
     .kak-nor-card figcaption { color: var(--muted); font-size: 30px; line-height: 1.35; padding: 28px 34px 32px; }
@@ -344,6 +347,14 @@
     .checkpoint-code pre { font-size: 25px; line-height: 1.48; }
     .checkpoint-code .risk-line { background: transparent; border-left: 0; color: #ffe0a3; }
     .audit-rule { align-items: center; display: flex; font: 800 23px var(--mono); gap: 30px; justify-content: center; margin-top: 24px; padding: 20px 26px; text-transform: uppercase; }
+    .fix-compare { display: grid; gap: 86px; grid-template-columns: 1fr 1fr; margin-top: 54px; }
+    .fix-side { border-top: 5px solid var(--danger); padding: 30px 22px 0; }
+    .fix-side.fixed { border-color: var(--lime); }
+    .fix-side h3 { font-size: 54px; margin: 24px 0 20px; }
+    .fix-side p { color: var(--muted); font-size: 32px; line-height: 1.38; }
+    .fix-tag { color: var(--danger); font: 800 21px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .fix-side.fixed .fix-tag { color: var(--lime); }
+    .fix-takeaway { font: 700 54px/1.12 var(--display); letter-spacing: -.035em; margin-top: 58px; text-align: center; }
 
     /* === VOTING SLIDES === */
     .vote-head { align-items: end; display: flex; justify-content: space-between; }
@@ -390,7 +401,7 @@
   </style>
 </head>
 <body>
-  <!-- === 22-SLIDE BEGINNER DECK === -->
+  <!-- === 26-SLIDE BEGINNER DECK === -->
   <div class="deck-viewport">
     <main class="deck-stage" id="deckStage">
 
@@ -429,10 +440,16 @@
               <span class="label">AISEA</span>
               <h3 data-editable>Southeast Asia’s AI builder coalition.</h3>
               <p data-editable>10,000+ builders · chapter-led · built around shipping.</p>
-              <div class="host-roles">
-                <span data-editable>Cofounder · AISEA</span>
-                <span data-editable>AI Resident · 500 Southeast Asia</span>
-                <span data-editable>Codex Ambassador · OpenAI</span>
+              <div class="host-card-footer">
+                <div class="host-roles">
+                  <span data-editable>Cofounder · AISEA</span>
+                  <span data-editable>AI Resident · 500 Southeast Asia</span>
+                  <span data-editable>Codex Ambassador · OpenAI</span>
+                </div>
+                <a class="host-qr-link" href="https://brendan-beh.com" target="_blank" rel="noreferrer" aria-label="Open brendan-beh.com">
+                  <img class="host-qr" src="./assets/slides/brendan-beh-qr.png" alt="QR code for brendan-beh.com">
+                  <span>brendan-beh.com</span>
+                </a>
               </div>
             </div>
           </div>
@@ -627,7 +644,27 @@
         <aside class="speaker-notes">Ask for risks, not a large rewrite. Translate the answer into the four fixed audit questions. The live response decides which risks need attention.</aside>
       </section>
 
-      <!-- 16 · Checkpoint 1: Understanding -->
+      <!-- 16 · Give your agent context -->
+      <section class="slide lesson" data-title="Give your agent context">
+        <div class="shell">
+          <header class="header"><span class="eyebrow">DEBUGGING HABIT_</span><span class="chapter">Better input · better diagnosis</span></header>
+          <div class="content"><span class="quote-mark reveal">＋</span><blockquote class="reveal d2" style="font-size:76px" data-editable>To debug, give your agent <span class="accent">as much context as possible.</span></blockquote></div>
+          <footer class="footer"><span>Error · expectation · steps · relevant files</span><span>16</span></footer>
+        </div>
+        <aside class="speaker-notes">Context does not mean pasting everything without structure. Give the exact error, what you expected, what actually happened, how to reproduce it, which files or screens are involved, and what you have already tried. Good context helps the agent distinguish the symptom from the cause.</aside>
+      </section>
+
+      <!-- 17 · Your agent sees a slice -->
+      <section class="slide lesson" data-title="Your agent sees a slice">
+        <div class="shell">
+          <header class="header"><span class="eyebrow">REALITY CHECK_</span><span class="chapter">Its view is bounded</span></header>
+          <div class="content"><span class="quote-mark reveal">▣</span><blockquote class="reveal d2" style="font-size:70px" data-editable>Your agent sees only a <span class="accent">small slice of the world.</span><br><span class="muted">It sees what you give it.</span></blockquote></div>
+          <footer class="footer"><span>Unseen context becomes an assumption</span><span>17</span></footer>
+        </div>
+        <aside class="speaker-notes">The agent can inspect the files and tools placed in scope, but it cannot automatically know your intention, private browser state, production behaviour, earlier conversations, or facts you have not shared. When the diagnosis feels wrong, first ask what important part of the world is still missing.</aside>
+      </section>
+
+      <!-- 18 · Checkpoint 1: Understanding -->
       <section class="slide" data-title="Checkpoint 1: Understanding">
         <div class="shell">
           <header class="header"><span class="eyebrow">CHECKPOINT 01_</span><span class="chapter">Language and intent</span></header>
@@ -640,12 +677,29 @@
 };</code></pre></div></div>
             </div>
           </div>
-          <footer class="footer"><span>Question · owner · evidence · next action</span><span>16</span></footer>
+          <footer class="footer"><span>Question · owner · evidence · next action</span><span>18</span></footer>
         </div>
         <aside class="speaker-notes">Open public/workflow/broken/01-understanding.js and compare it with public/workflow/answers/01-understanding.js. Check only the items, selling units, note, and pickup request. If the shape is wrong, switch extractBroken → extractFixed, then rerun.</aside>
       </section>
 
-      <!-- 17 · Checkpoint 2: Money -->
+      <!-- 19 · Fix 1: Understanding -->
+      <section class="slide" data-title="Broken vs fixed: Understanding">
+        <div class="shell">
+          <header class="header"><span class="eyebrow">FIX 01_</span><span class="chapter">Understand the order</span></header>
+          <div class="content">
+            <h2 class="round-title reveal" data-editable>What changed?</h2>
+            <div class="fix-compare">
+              <div class="fix-side reveal d1"><span class="fix-tag">Broken</span><h3 data-editable>AI guessed the selling unit.</h3><p data-editable>“1 Kaya Puff” became one piece, so the order could not be trusted.</p></div>
+              <div class="fix-side fixed reveal d2"><span class="fix-tag">Fixed</span><h3 data-editable>Define the rules. Reject bad output.</h3><p data-editable>Give AI the menu units and exact format, then let code validate the result.</p></div>
+            </div>
+            <p class="fix-takeaway reveal d3" data-editable><span class="accent">AI reads intent.</span> Code checks the result.</p>
+          </div>
+          <footer class="footer"><span>Make assumptions explicit</span><span>19</span></footer>
+        </div>
+        <aside class="speaker-notes">The customer did not state a Kaya Puff quantity. The menu sells it by half-dozen, so one named item means one selling unit. The fixed step gives AI the rule and exact JSON shape, then rejects anything invalid.</aside>
+      </section>
+
+      <!-- 20 · Checkpoint 2: Money -->
       <section class="slide" data-title="Checkpoint 2: Money">
         <div class="shell">
           <header class="header"><span class="eyebrow">CHECKPOINT 02_</span><span class="chapter">Money and rules</span></header>
@@ -658,12 +712,29 @@
 }</code></pre></div></div>
             </div>
           </div>
-          <footer class="footer"><span>Language can vary · money must not</span><span>17</span></footer>
+          <footer class="footer"><span>Language can vary · money must not</span><span>20</span></footer>
         </div>
         <aside class="speaker-notes">Open public/workflow/broken/02-money.js and compare it with public/workflow/answers/02-money.js. Check the arithmetic against the menu. Keep language work in AI, but move menu lookup and calculation into code with priceFixed, then rerun.</aside>
       </section>
 
-      <!-- 18 · Checkpoint 3: Handoff -->
+      <!-- 21 · Fix 2: Money -->
+      <section class="slide" data-title="Broken vs fixed: Money">
+        <div class="shell">
+          <header class="header"><span class="eyebrow">FIX 02_</span><span class="chapter">Calculate the money</span></header>
+          <div class="content">
+            <h2 class="round-title reveal" data-editable>What changed?</h2>
+            <div class="fix-compare">
+              <div class="fix-side reveal d1"><span class="fix-tag">Broken</span><h3 data-editable>AI confidently said RM159.</h3><p data-editable>It read the menu and did the arithmetic, so the answer could change or be wrong.</p></div>
+              <div class="fix-side fixed reveal d2"><span class="fix-tag">Fixed</span><h3 data-editable>Code calculates RM162.</h3><p data-editable>RM90 + RM12 + RM60 always follows the same menu prices and rules.</p></div>
+            </div>
+            <p class="fix-takeaway reveal d3" data-editable><span class="accent">Use fixed rules for money.</span> Not AI.</p>
+          </div>
+          <footer class="footer"><span>AI for language · code for maths</span><span>21</span></footer>
+        </div>
+        <aside class="speaker-notes">Language can vary, but these prices and this arithmetic do not. Once the order is understood, normal code gives the same correct total every time: RM90 + RM12 + RM60 = RM162.</aside>
+      </section>
+
+      <!-- 22 · Checkpoint 3: Handoff -->
       <section class="slide" data-title="Checkpoint 3: Handoff">
         <div class="shell">
           <header class="header"><span class="eyebrow">CHECKPOINT 03_</span><span class="chapter">Data handoff</span></header>
@@ -676,12 +747,29 @@
 }</code></pre></div></div>
             </div>
           </div>
-          <footer class="footer"><span>Preserve every required fact at the handoff</span><span>18</span></footer>
+          <footer class="footer"><span>Preserve every required fact at the handoff</span><span>22</span></footer>
         </div>
         <aside class="speaker-notes">Open public/workflow/broken/03-handoff.js and compare it with public/workflow/answers/03-handoff.js. Point to the item lines, total, Kaya Puff note, and pickup request. Preserve the complete priced order with invoiceFixed, then rerun.</aside>
       </section>
 
-      <!-- 19 · Checkpoint 4: Promise -->
+      <!-- 23 · Fix 3: Handoff -->
+      <section class="slide" data-title="Broken vs fixed: Handoff">
+        <div class="shell">
+          <header class="header"><span class="eyebrow">FIX 03_</span><span class="chapter">Keep every fact</span></header>
+          <div class="content">
+            <h2 class="round-title reveal" data-editable>What changed?</h2>
+            <div class="fix-compare">
+              <div class="fix-side reveal d1"><span class="fix-tag">Broken</span><h3 data-editable>Only the total survived.</h3><p data-editable>The items, special note, and pickup request disappeared before the next step.</p></div>
+              <div class="fix-side fixed reveal d2"><span class="fix-tag">Fixed</span><h3 data-editable>Move the complete order together.</h3><p data-editable>The invoice keeps every item, RM162, the note, and the pickup request.</p></div>
+            </div>
+            <p class="fix-takeaway reveal d3" data-editable>At every handoff, check <span class="accent">what must survive.</span></p>
+          </div>
+          <footer class="footer"><span>A correct total is not a complete order</span><span>23</span></footer>
+        </div>
+        <aside class="speaker-notes">A correct total is not a complete order. Follow the flow from one step to the next and confirm that every fact needed later is still present: item lines, total, note, and pickup request.</aside>
+      </section>
+
+      <!-- 24 · Checkpoint 4: Promise -->
       <section class="slide" data-title="Checkpoint 4: Promise">
         <div class="shell">
           <header class="header"><span class="eyebrow">CHECKPOINT 04_</span><span class="chapter">Customer promise</span></header>
@@ -694,12 +782,29 @@
 }</code></pre></div></div>
             </div>
           </div>
-          <footer class="footer"><span>A fluent sentence is not permission</span><span>19</span></footer>
+          <footer class="footer"><span>A fluent sentence is not permission</span><span>24</span></footer>
         </div>
         <aside class="speaker-notes">Open public/workflow/broken/04-promise.js and compare it with public/workflow/answers/04-promise.js. Check that the reply stays inside known facts. Build it from the validated invoice with replyFixed, then rerun.</aside>
       </section>
 
-      <!-- 20 · Run again -->
+      <!-- 25 · Fix 4: Promise -->
+      <section class="slide" data-title="Broken vs fixed: Promise">
+        <div class="shell">
+          <header class="header"><span class="eyebrow">FIX 04_</span><span class="chapter">Do not invent promises</span></header>
+          <div class="content">
+            <h2 class="round-title reveal" data-editable>What changed?</h2>
+            <div class="fix-compare">
+              <div class="fix-side reveal d1"><span class="fix-tag">Broken</span><h3 data-editable>AI promised delivery at 5pm.</h3><p data-editable>The customer asked for pickup. A helpful-sounding reply invented a new fact.</p></div>
+              <div class="fix-side fixed reveal d2"><span class="fix-tag">Fixed</span><h3 data-editable>Use only known facts.</h3><p data-editable>The reply repeats the request and says Kak Nor will confirm the details.</p></div>
+            </div>
+            <p class="fix-takeaway reveal d3" data-editable><span class="accent">If unsure, ask for confirmation.</span></p>
+          </div>
+          <footer class="footer"><span>A request is not a confirmed promise</span><span>25</span></footer>
+        </div>
+        <aside class="speaker-notes">Helpful-sounding words can still be wrong. The fixed reply is built only from trusted invoice facts, so it cannot quietly turn a pickup request into a delivery promise. If a detail is not confirmed, say Kak Nor will confirm it.</aside>
+      </section>
+
+      <!-- 26 · Run again -->
       <section class="slide" data-title="Run again">
         <div class="shell">
           <header class="header"><span class="eyebrow">RUN AGAIN_</span><span class="chapter">Variability is part of the lesson</span></header>
@@ -713,23 +818,23 @@
               </div>
             </div>
           </div>
-          <footer class="footer"><span>Same method · fresh evidence</span><span>20</span></footer>
+          <footer class="footer"><span>Same method · fresh evidence</span><span>26</span></footer>
         </div>
         <aside class="speaker-notes">Never manufacture a diagnosis. Later checks are NOT REACHED until the pipeline reaches them. Once all four checks pass, celebrate and try the harder prepared input. Compare every run using the same four questions and three statuses. Different model outputs are expected. Use Fixture only if provider, network, or quota failure blocks the live run.</aside>
       </section>
 
-      <!-- 21 · Four rules -->
+      <!-- 27 · Four rules -->
       <section class="slide" data-title="Four rules">
         <div class="shell"><header class="header"><span class="eyebrow">TAKEAWAY_</span><span class="chapter">Use this on the next build</span></header><div class="content"><h2 class="reveal" style="font-size:76px" data-editable>Four rules.</h2><ol class="instincts">
           <li class="reveal d1"><span class="number">01</span><span data-editable><strong>Understand</strong>Understand the whole process.</span></li>
           <li class="reveal d2"><span class="number">02</span><span data-editable><strong>Compare</strong>Compare the result to ground truth.</span></li>
           <li class="reveal d3"><span class="number">03</span><span data-editable><strong>Assign</strong>Assign each responsibility.</span></li>
           <li class="reveal d4"><span class="number">04</span><span data-editable><strong>Test</strong>Change carefully. Test again.</span></li>
-        </ol><p class="takeaway reveal d4" style="font-size:58px;margin-top:34px;text-align:center" data-editable><span class="accent">Understand.</span> Compare. Assign. Test again.</p></div><footer class="footer"><span>Brendan Beh · AISEA</span><span>21</span></footer></div>
+        </ol><p class="takeaway reveal d4" style="font-size:58px;margin-top:34px;text-align:center" data-editable><span class="accent">Understand.</span> Compare. Assign. Test again.</p></div><footer class="footer"><span>Brendan Beh · AISEA</span><span>27</span></footer></div>
         <aside class="speaker-notes">Close on the method: understand, compare to ground truth, assign responsibility, and test again. A beginner does not need to read every line of code to ask these questions well.</aside>
       </section>
 
-      <!-- 22 · Crowd build -->
+      <!-- 28 · Crowd build -->
       <section class="slide lesson" data-title="What should we build next?">
         <div class="shell">
           <header class="header"><span class="eyebrow">YOUR TURN_</span><span class="chapter">Crowd idea · live code</span></header>
@@ -738,7 +843,7 @@
             <blockquote class="reveal d2" style="font-size:118px" data-editable>What else can we do for <span class="accent">this repo?</span></blockquote>
             <p class="lead reveal d3" style="margin-top:48px" data-editable>You suggest. We choose one small change. Then we build and test it live.</p>
           </div>
-          <footer class="footer"><span>Understand first · change one thing · test it</span><span>22</span></footer>
+          <footer class="footer"><span>Understand first · change one thing · test it</span><span>28</span></footer>
         </div>
         <aside class="speaker-notes">Invite ideas from the room. Choose one small suggestion that can be completed and tested on stage. Before editing, ask Codex to explain which part of the flow the idea touches. Make one focused change, run the smallest relevant test, and show the result. If an idea is too large, shrink it to the smallest useful version.</aside>
       </section>
@@ -747,7 +852,7 @@
 
   <!-- === VIEWER CHROME === -->
   <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
-  <nav class="deck-controls" aria-label="Presentation controls"><button id="previousSlide" type="button" aria-label="Previous slide">←</button><span class="deck-count" id="deckCount" aria-live="polite">1 / 22</span><button id="nextSlide" type="button" aria-label="Next slide">→</button><button id="notesToggle" type="button">Notes</button></nav>
+  <nav class="deck-controls" aria-label="Presentation controls"><button id="previousSlide" type="button" aria-label="Previous slide">←</button><span class="deck-count" id="deckCount" aria-live="polite">1 / 28</span><button id="nextSlide" type="button" aria-label="Next slide">→</button><button id="notesToggle" type="button">Notes</button></nav>
 
   <!-- === INLINE EDITOR: hover top-left or press E === -->
   <div class="edit-hotzone" aria-hidden="true"></div>
