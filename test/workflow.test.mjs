@@ -32,12 +32,11 @@ test("customer corrections stay ordered and assistant output is never order trut
 const expectedReplies = [
   `Here's the extracted bakery order:
 
-- **Items Ordered:**
-  - 2 Kek Coklat
-  - 1 Kaya Puff (without extra sugar)
-  - 1 Kek Lapis
+- 2 Kek Coklat
+- 1 individual Kaya Puff (without extra sugar)
+- 1 Kek Lapis
 
-- **Collection Time:** Tomorrow afternoon
+- Collection: Tomorrow afternoon
 
 Let me know if you need anything else!`,
   "Your order total is RM159.",
@@ -134,7 +133,9 @@ test("an unnumbered Kaya Puff exposes guessing but the fixed contract applies on
   assert.doesNotMatch(DEMO_MESSAGE, /(?:1|6) kaya puff|half[- ]dozen/i);
 
   const broken = await extractBroken(DEMO_MESSAGE, completeFixture);
-  assert.match(broken.chatResponse, /1 Kaya Puff/);
+  assert.match(broken.chatResponse, /1 individual Kaya Puff/);
+  assert.match(broken.chatResponse, /without extra sugar/);
+  assert.match(broken.chatResponse, /Tomorrow afternoon/);
 
   const fixed = await extractFixed(DEMO_MESSAGE, completeFixture);
   assert.deepEqual(fixed.value.items.find((item) => item.menuId === "K1"), { menuId: "K1", units: 1 });

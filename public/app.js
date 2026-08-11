@@ -29,7 +29,7 @@ const elements = {
 };
 
 const state = {
-  source: "fixture",
+  source: "live",
   provider: "openai",
   apiKey: "",
   running: false,
@@ -105,7 +105,7 @@ function renderSettings() {
   elements.clearKey.disabled = !live || !state.apiKey;
   elements.keyNote.textContent = live
     ? "Live API handles arbitrary follow-ups. Your key stays in browser memory and disappears on refresh."
-    : "Scripted fixture replays the demo failures. Use Live API for arbitrary follow-ups.";
+    : "Fixture is a deterministic fallback for provider, network, or quota problems.";
   renderModel();
 }
 
@@ -166,8 +166,8 @@ async function runBot() {
     renderDashboard();
     elements.runLabel.textContent = "Run again";
     const recovered = result.report.status === "complete";
-    pending.row.dataset.state = recovered ? "success" : "response";
-    setStatus(recovered ? "Recovered" : "Ready", recovered ? "success" : "");
+    pending.row.dataset.state = recovered ? "success" : "error";
+    setStatus(recovered ? "Recovered" : "Stopped — needs repair", recovered ? "success" : "error");
   } catch (error) {
     const response = `Sorry, the bot could not run. ${safeError(error)}`;
     finishMessage(pending, response);

@@ -34,7 +34,7 @@
             <p id="run-status" role="status" aria-live="polite">
               Ready
             </p>
-            <p id="model-label">Scripted fixture · demo responses</p>
+            <p id="model-label">Model: selected by local server</p>
           </div>
         </header>
 
@@ -101,11 +101,11 @@
           <legend>Source</legend>
           <div class="segmented-control">
             <label>
-              <input type="radio" name="source" value="fixture" checked />
+              <input type="radio" name="source" value="fixture" />
               <span>Scripted fixture</span>
             </label>
             <label>
-              <input type="radio" name="source" value="live" />
+              <input type="radio" name="source" value="live" checked />
               <span>Live API · follow-ups</span>
             </label>
           </div>
@@ -133,7 +133,7 @@
           <button id="clear-key" class="quiet-button" type="button" disabled>Clear</button>
         </div>
         <p id="key-note" class="privacy-note">
-          Scripted fixture replays the demo failures. Use Live API for arbitrary follow-ups.
+          Live API is the workshop default. Your key stays in browser memory and disappears on refresh.
         </p>
       </form>
     </dialog>

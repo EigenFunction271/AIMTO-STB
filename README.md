@@ -2,7 +2,7 @@
 
 A small workshop app for **[DEBUG] Save the Build** at AI Malaysia Takeover.
 
-You do not need AI or coding experience. The app shows one bakery order, one broken reply, and four simple repairs.
+You do not need AI or coding experience. The app runs one bakery order through four checks: understanding, money, handoff, and promise.
 
 ## What you need
 
@@ -10,10 +10,11 @@ You do not need AI or coding experience. The app shows one bakery order, one bro
 - A browser
 - Node.js
 - This project folder
+- An OpenAI API key for the normal live workshop path
 
-Use an **OpenAI API key** for the live demo. This is the recommended setup.
+Use **Live API** for the normal workshop path. It is the default, and its response may vary between runs.
 
-If the key or internet connection fails, switch to **Fixture** mode. Fixture mode needs no key.
+Use **Fixture** only when a provider, network, or quota problem blocks the live session. It needs no API key or internet connection.
 
 ## 1. Install Node.js
 
@@ -69,7 +70,7 @@ Keep Terminal open. Press <kbd>Control</kbd> + <kbd>C</kbd> when you want to sto
 
 No `npm install` is needed.
 
-## 5. Get an OpenAI API key — recommended
+## 5. Get an OpenAI API key for the live workshop
 
 Use the OpenAI Platform, not the ChatGPT message box.
 
@@ -101,26 +102,61 @@ Official reference: [OpenAI API quickstart](https://developers.openai.com/api/do
 - Do not paste it into the code.
 - Do not include it in a screenshot or Git commit.
 - Refreshing or closing this app clears the key.
+- After each code-refresh round, reopen Settings and enter the key again.
 - API use may cost money.
 
 The app sends the key only to the local server and then to OpenAI for that request. It does not save the key.
 
-## Run without an API key
+## Run the live workshop — default
+
+1. Open Settings.
+2. Keep **Live API** and **OpenAI · GPT-4o mini (recommended)** selected.
+3. Paste the API key.
+4. Close Settings.
+5. Press **Run bot**.
+
+Do not predict the response. Compare what actually appears with the known order facts, menu, RM162 total, note, and pickup request.
+
+Mark each checkpoint **PASS**, **NEEDS WORK**, or **NOT REACHED**. The pipeline stops at its first unmet stage, so do not judge later checkpoints until a rerun reaches them. Once all four checks pass, celebrate it and try a harder follow-up.
+
+## Use Fixture only as a fallback
+
+If the live provider, network, or quota fails:
 
 1. Open Settings.
 2. Choose **Fixture**.
 3. Close Settings.
 4. Press **Run bot**.
 
-Fixture mode gives the same controlled responses every time. Use it as the stage backup.
+Fixture mode provides deterministic fallback examples so the session can continue. They are not a prediction of what the live model should do.
 
-The first bad response is deliberate. It means the demo is working.
+## Codebase map — start here
+
+Start with [`public/workflow.js`](public/workflow.js). It is the workshop **switchboard**: it imports the smaller workflow parts and its `PIPELINE` block chooses whether each checkpoint runs the `Broken` or `Fixed` version. You do not need to understand every file before using it.
+
+| File | Plain-English job |
+|------|-------------------|
+| [`public/workflow.js`](public/workflow.js) | Start here. Switches each checkpoint between `Broken` and `Fixed`. |
+| [`public/workflow/pipeline.js`](public/workflow/pipeline.js) | Runs the four checkpoints in order and stops at the first untrusted result. |
+| [`public/workflow/order.js`](public/workflow/order.js) | Holds the menu, demo order, conversation rules, and order validation shared by every stage. |
+| [`public/workflow/fixtures.js`](public/workflow/fixtures.js) | Holds predictable fallback model replies for provider, network, or quota failure. |
+| [`public/app.js`](public/app.js) | Connects the chat, Settings, status, and dashboard to the workflow. |
+| [`server.mjs`](server.mjs) | Serves the app locally and makes live provider requests without saving the API key. |
+
+The numbered stage files match the workshop checkpoints:
+
+| Checkpoint | Stage file | Input | Trusted output |
+|------------|------------|-------|----------------|
+| 1 · Understanding | [`01-understanding.js`](public/workflow/stages/01-understanding.js) | Customer messages as text | A parsed order that passed `validateOrder` |
+| 2 · Money | [`02-money.js`](public/workflow/stages/02-money.js) | The validated order | Item prices and total calculated from the menu in code |
+| 3 · Handoff | [`03-handoff.js`](public/workflow/stages/03-handoff.js) | The trusted priced order | An invoice containing lines, total, notes, and fulfilment details |
+| 4 · Promise | [`04-promise.js`](public/workflow/stages/04-promise.js) | The trusted invoice | A customer reply assembled only from invoice facts |
 
 ## Run the workshop
 
 Participants only need to answer:
 
-> Did the bot lose something, get something wrong, or make something up?
+> Did this checkpoint PASS, NEEDS WORK, or was it NOT REACHED?
 
 The facilitator edits one block in `public/workflow.js`:
 
@@ -135,14 +171,21 @@ export const PIPELINE = Object.freeze({
 
 Use [Visual Studio Code](https://code.visualstudio.com/) or another text editor.
 
-For each round:
+For each checkpoint, use the same debugging loop:
+
+- **PASS:** the pipeline reached this stage and its result matches the pass condition.
+- **NEEDS WORK:** the pipeline reached this stage, but its result is wrong, incomplete, or untrusted.
+- **NOT REACHED:** an earlier stage stopped first. Do not diagnose this stage yet.
 
 1. Run the bot.
-2. Let the audience find the problem.
-3. Change one `Broken` word to `Fixed`.
-4. Save the file.
-5. Refresh the browser.
-6. Run again.
+2. Use the app status and run history to identify the last stage reached.
+3. Mark later checkpoints **NOT REACHED**; do not diagnose them yet.
+4. Open that checkpoint's numbered stage file to understand its input, risk, and trusted output.
+5. Judge the reached checkpoint against its fixed pass condition.
+6. In the `PIPELINE` block in [`public/workflow.js`](public/workflow.js), change only that stage's `Broken` name to `Fixed`. If its visible content passed but the pipeline still stopped before trusting it, this switch lets the next checkpoint run without calling the content wrong.
+7. Save the file and refresh the browser.
+8. Reopen Settings and enter the API key again.
+9. Run again.
 
 Make the repairs in this order:
 
@@ -168,6 +211,17 @@ Make the repairs in this order:
 
 The final reply should keep the order note and pickup request, total RM162, and make no delivery or timing promise.
 
+### What each repair activates
+
+The `PIPELINE` block in [`public/workflow.js`](public/workflow.js) only chooses which version runs. The detailed implementations live in the numbered stage files:
+
+- [`extractFixed` in Checkpoint 1](public/workflow/stages/01-understanding.js) uses the structured `extract-fixed` prompt, parses the model JSON, and validates the order.
+- [`priceFixed` in Checkpoint 2](public/workflow/stages/02-money.js) calls `priceOrder`, which calculates every line from `MENU` instead of trusting a model total.
+- [`invoiceFixed` in Checkpoint 3](public/workflow/stages/03-handoff.js) calls `buildInvoice`, preserving the priced lines, total, notes, and fulfilment request.
+- [`replyFixed` in Checkpoint 4](public/workflow/stages/04-promise.js) calls `buildReply`, producing the customer confirmation from validated invoice facts without another AI call.
+
+The switchboard uses these same stage modules in Fixture and Live API modes. With all four `Fixed` versions activated, Live API uses AI only for extraction; pricing, invoice creation, dashboard reporting, and the final reply are handled by code.
+
 ## Reset before the session
 
 Set all four stages back to `Broken`:
@@ -189,7 +243,7 @@ Run:
 npm test
 ```
 
-You should see four passing tests.
+You should see six passing tests.
 
 ## Quick troubleshooting
 
@@ -221,21 +275,28 @@ Then open [http://127.0.0.1:3001](http://127.0.0.1:3001).
 
 ### The live OpenAI call fails
 
-Check the key, billing, internet connection, and account limits. Switch to Fixture mode so the session can continue.
+Check the key, billing, internet connection, and account limits. Switch to Fixture only so a provider, network, or quota problem does not stop the session.
 
 ### The page did not change after editing
 
-Save `public/workflow.js`, then refresh the browser.
+Save the file you edited—normally [`public/workflow.js`](public/workflow.js)—then refresh the browser. Refresh clears the in-memory API key, so enter it again in Settings before rerunning.
 
 ## Files
 
 ```text
-server.mjs             Starts the local app and calls providers
-public/index.html      Chat window
-public/app.js          Buttons and Settings
-public/styles.css      Design
-public/workflow.js     The four workshop repairs
-test/workflow.test.mjs Checks the sequence
+server.mjs                                  Local server and live provider calls
+public/index.html                           Chat window
+public/app.js                               Buttons, Settings, status, and dashboard
+public/styles.css                           App design
+public/workflow.js                          Start-here switchboard
+public/workflow/order.js                    Menu, demo order, and validation
+public/workflow/pipeline.js                 Four-stage runner and stop-first reports
+public/workflow/fixtures.js                 Fixture-only fallback responses
+public/workflow/stages/01-understanding.js  Checkpoint 1 · customer text → validated order
+public/workflow/stages/02-money.js          Checkpoint 2 · validated order → trusted total
+public/workflow/stages/03-handoff.js        Checkpoint 3 · priced order → complete invoice
+public/workflow/stages/04-promise.js        Checkpoint 4 · invoice → fact-based reply
+test/workflow.test.mjs                      Workflow sequence checks
 ```
 
-Only edit `public/workflow.js` during the workshop.
+During the workshop, begin with and edit only the four `PIPELINE` lines in [`public/workflow.js`](public/workflow.js). The numbered stage files are there to explain what each checkpoint owns; participants do not need to edit them.
