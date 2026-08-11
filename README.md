@@ -14,7 +14,7 @@ You do not need AI or coding experience. The app runs one bakery order through f
 
 Use **Live API** for the normal workshop path. It is the default, and its response may vary between runs.
 
-Use **Fixture** only when a provider, network, or quota problem blocks the live session. It needs no API key or internet connection.
+Use **Fixture** only when a provider, network, or quota problem blocks the live session. It is a saved offline model response, so it needs no API key or internet connection.
 
 ## 1. Install Node.js
 
@@ -128,29 +128,41 @@ If the live provider, network, or quota fails:
 3. Close Settings.
 4. Press **Run bot**.
 
-Fixture mode provides deterministic fallback examples so the session can continue. They are not a prediction of what the live model should do.
+Fixture mode replays saved model responses so the session can continue. It is a response source—not a workflow stage, a repair, or an answer scheme.
 
 ## Codebase map — start here
 
-Start with [`public/workflow.js`](public/workflow.js). It is the workshop **switchboard**: it imports the smaller workflow parts and its `PIPELINE` block chooses whether each checkpoint runs the `Broken` or `Fixed` version. You do not need to understand every file before using it.
+Start with [`public/workflow.js`](public/workflow.js). It is the workshop **switchboard**: its `PIPELINE` block chooses the broken or answer implementation for each checkpoint. For a guided tour with direct links, open [`public/workflow/00-START-HERE.md`](public/workflow/00-START-HERE.md).
+
+The folders answer three different questions:
+
+| Folder | Question it answers |
+|--------|---------------------|
+| [`public/model-sources/`](public/model-sources/) | Where did the AI-like response text come from? |
+| [`public/workflow/broken/`](public/workflow/broken/) | What intentionally risky code is the workshop running? |
+| [`public/workflow/answers/`](public/workflow/answers/) | What does the openly browsable reference answer look like? |
 
 | File | Plain-English job |
 |------|-------------------|
-| [`public/workflow.js`](public/workflow.js) | Start here. Switches each checkpoint between `Broken` and `Fixed`. |
+| [`public/workflow.js`](public/workflow.js) | Start here. Switches each checkpoint between its broken and answer implementation. |
+| [`public/workflow/00-START-HERE.md`](public/workflow/00-START-HERE.md) | Reading map with direct links between every broken file and answer. |
 | [`public/workflow/pipeline.js`](public/workflow/pipeline.js) | Runs the four checkpoints in order and stops at the first untrusted result. |
 | [`public/workflow/order.js`](public/workflow/order.js) | Holds the menu, demo order, conversation rules, and order validation shared by every stage. |
-| [`public/workflow/fixtures.js`](public/workflow/fixtures.js) | Holds predictable fallback model replies for provider, network, or quota failure. |
+| [`public/model-sources/live.js`](public/model-sources/live.js) | Gets a live model response through the local server. |
+| [`public/model-sources/fixture.js`](public/model-sources/fixture.js) | Replays saved responses for offline fallback and tests. |
 | [`public/app.js`](public/app.js) | Connects the chat, Settings, status, and dashboard to the workflow. |
 | [`server.mjs`](server.mjs) | Serves the app locally and makes live provider requests without saving the API key. |
 
 The numbered stage files match the workshop checkpoints:
 
-| Checkpoint | Stage file | Input | Trusted output |
-|------------|------------|-------|----------------|
-| 1 · Understanding | [`01-understanding.js`](public/workflow/stages/01-understanding.js) | Customer messages as text | A parsed order that passed `validateOrder` |
-| 2 · Money | [`02-money.js`](public/workflow/stages/02-money.js) | The validated order | Item prices and total calculated from the menu in code |
-| 3 · Handoff | [`03-handoff.js`](public/workflow/stages/03-handoff.js) | The trusted priced order | An invoice containing lines, total, notes, and fulfilment details |
-| 4 · Promise | [`04-promise.js`](public/workflow/stages/04-promise.js) | The trusted invoice | A customer reply assembled only from invoice facts |
+| Checkpoint | Broken workshop file | Open answer reference | Trusted output |
+|------------|----------------------|-----------------------|----------------|
+| 1 · Understanding | [`broken/01-understanding.js`](public/workflow/broken/01-understanding.js) | [`answers/01-understanding.js`](public/workflow/answers/01-understanding.js) | A parsed order that passed `validateOrder` |
+| 2 · Money | [`broken/02-money.js`](public/workflow/broken/02-money.js) | [`answers/02-money.js`](public/workflow/answers/02-money.js) | Item prices and total calculated from the menu in code |
+| 3 · Handoff | [`broken/03-handoff.js`](public/workflow/broken/03-handoff.js) | [`answers/03-handoff.js`](public/workflow/answers/03-handoff.js) | An invoice containing lines, total, notes, and fulfilment details |
+| 4 · Promise | [`broken/04-promise.js`](public/workflow/broken/04-promise.js) | [`answers/04-promise.js`](public/workflow/answers/04-promise.js) | A customer reply assembled only from invoice facts |
+
+The answer folder is not hidden. Participants can open it at any time to compare approaches, read the comments, or recover if they get lost.
 
 ## Run the workshop
 
@@ -180,12 +192,13 @@ For each checkpoint, use the same debugging loop:
 1. Run the bot.
 2. Use the app status and run history to identify the last stage reached.
 3. Mark later checkpoints **NOT REACHED**; do not diagnose them yet.
-4. Open that checkpoint's numbered stage file to understand its input, risk, and trusted output.
-5. Judge the reached checkpoint against its fixed pass condition.
-6. In the `PIPELINE` block in [`public/workflow.js`](public/workflow.js), change only that stage's `Broken` name to `Fixed`. If its visible content passed but the pipeline still stopped before trusting it, this switch lets the next checkpoint run without calling the content wrong.
-7. Save the file and refresh the browser.
-8. Reopen Settings and enter the API key again.
-9. Run again.
+4. Open that checkpoint's file in [`public/workflow/broken/`](public/workflow/broken/) to understand its input, source, output, and risk.
+5. Open the matching file in [`public/workflow/answers/`](public/workflow/answers/) and compare the two implementations.
+6. Judge the reached checkpoint against its fixed pass condition.
+7. In the `PIPELINE` block in [`public/workflow.js`](public/workflow.js), change only that stage's `Broken` name to `Fixed`. If its visible content passed but the pipeline still stopped before trusting it, this switch lets the next checkpoint run without calling the content wrong.
+8. Save the file and refresh the browser.
+9. Reopen Settings and enter the API key again.
+10. Run again.
 
 Make the repairs in this order:
 
@@ -213,14 +226,14 @@ The final reply should keep the order note and pickup request, total RM162, and 
 
 ### What each repair activates
 
-The `PIPELINE` block in [`public/workflow.js`](public/workflow.js) only chooses which version runs. The detailed implementations live in the numbered stage files:
+The `PIPELINE` block in [`public/workflow.js`](public/workflow.js) only chooses which version runs. The openly browsable reference implementations live in `workflow/answers/`:
 
-- [`extractFixed` in Checkpoint 1](public/workflow/stages/01-understanding.js) uses the structured `extract-fixed` prompt, parses the model JSON, and validates the order.
-- [`priceFixed` in Checkpoint 2](public/workflow/stages/02-money.js) calls `priceOrder`, which calculates every line from `MENU` instead of trusting a model total.
-- [`invoiceFixed` in Checkpoint 3](public/workflow/stages/03-handoff.js) calls `buildInvoice`, preserving the priced lines, total, notes, and fulfilment request.
-- [`replyFixed` in Checkpoint 4](public/workflow/stages/04-promise.js) calls `buildReply`, producing the customer confirmation from validated invoice facts without another AI call.
+- [`extractFixed` in Checkpoint 1](public/workflow/answers/01-understanding.js) uses the structured prompt, parses the model JSON, and validates the order.
+- [`priceFixed` in Checkpoint 2](public/workflow/answers/02-money.js) calculates every line from `MENU` instead of trusting a model total.
+- [`invoiceFixed` in Checkpoint 3](public/workflow/answers/03-handoff.js) preserves the priced lines, total, notes, and fulfilment request.
+- [`replyFixed` in Checkpoint 4](public/workflow/answers/04-promise.js) produces the customer confirmation from validated invoice facts without another AI call.
 
-The switchboard uses these same stage modules in Fixture and Live API modes. With all four `Fixed` versions activated, Live API uses AI only for extraction; pricing, invoice creation, dashboard reporting, and the final reply are handled by code.
+[`public/app.js`](public/app.js) explicitly selects `completeFromLive` or `completeFromFixture`, then passes that source into the same workflow. `workflow.js` does not secretly select or default to Fixture. With all four `Fixed` versions activated, Live API uses AI only for extraction; pricing, invoice creation, dashboard reporting, and the final reply are handled by code.
 
 ## Reset before the session
 
@@ -243,7 +256,7 @@ Run:
 npm test
 ```
 
-You should see six passing tests.
+You should see seven passing tests.
 
 ## Quick troubleshooting
 
@@ -289,14 +302,20 @@ public/index.html                           Chat window
 public/app.js                               Buttons, Settings, status, and dashboard
 public/styles.css                           App design
 public/workflow.js                          Start-here switchboard
-public/workflow/order.js                    Menu, demo order, and validation
-public/workflow/pipeline.js                 Four-stage runner and stop-first reports
-public/workflow/fixtures.js                 Fixture-only fallback responses
-public/workflow/stages/01-understanding.js  Checkpoint 1 · customer text → validated order
-public/workflow/stages/02-money.js          Checkpoint 2 · validated order → trusted total
-public/workflow/stages/03-handoff.js        Checkpoint 3 · priced order → complete invoice
-public/workflow/stages/04-promise.js        Checkpoint 4 · invoice → fact-based reply
-test/workflow.test.mjs                      Workflow sequence checks
+public/model-sources/live.js                Live response source
+public/model-sources/fixture.js             Saved offline/test response source
+public/workflow/00-START-HERE.md             Linked beginner reading map
+public/workflow/order.js                     Menu, demo order, and validation
+public/workflow/pipeline.js                  Four-stage runner and stop-first reports
+public/workflow/broken/01-understanding.js   Broken checkpoint 1
+public/workflow/broken/02-money.js           Broken checkpoint 2
+public/workflow/broken/03-handoff.js         Broken checkpoint 3
+public/workflow/broken/04-promise.js         Broken checkpoint 4
+public/workflow/answers/01-understanding.js  Answer checkpoint 1
+public/workflow/answers/02-money.js          Answer checkpoint 2
+public/workflow/answers/03-handoff.js        Answer checkpoint 3
+public/workflow/answers/04-promise.js        Answer checkpoint 4
+test/workflow.test.mjs                       Workflow sequence checks
 ```
 
-During the workshop, begin with and edit only the four `PIPELINE` lines in [`public/workflow.js`](public/workflow.js). The numbered stage files are there to explain what each checkpoint owns; participants do not need to edit them.
+During the workshop, edit only the four `PIPELINE` lines in [`public/workflow.js`](public/workflow.js). Browse `broken/` and `answers/` freely; switching does not require copying code between them.

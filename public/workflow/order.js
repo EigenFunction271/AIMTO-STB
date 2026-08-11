@@ -1,5 +1,6 @@
-// Shared order rules live here so every stage agrees on what a valid order means.
-// Data flow: customer text -> model JSON -> validateOrder -> priceOrder -> invoice -> reply.
+// SHARED BUSINESS RULES
+// Both broken/ and answers/ import this menu and validator so they compare the same facts.
+// This file does not call a live model or a fixture.
 
 export const DEMO_MESSAGE =
   "Hi kak, nak order 2 kek coklat, kaya puff, and 1 kek lapis. Kaya puff tu jangan letak gula lebih ya. Nak collect esok petang 😊";

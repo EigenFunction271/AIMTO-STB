@@ -1,4 +1,6 @@
-import { DEMO_MESSAGE, MENU, completeFixture, formatCustomerConversation, runOrderBot } from "./workflow.js";
+import { completeFromFixture } from "./model-sources/fixture.js";
+import { completeFromLive } from "./model-sources/live.js";
+import { DEMO_MESSAGE, MENU, formatCustomerConversation, runOrderBot } from "./workflow.js";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -158,7 +160,17 @@ async function runBot() {
   setStatus("Running");
 
   try {
-    const complete = state.source === "fixture" ? completeFixture : completeLive;
+    // Choose where model text comes from here. Workflow stages do not know or care.
+    const complete = state.source === "fixture"
+      ? completeFromFixture
+      : (operation, input) => completeFromLive(operation, input, {
+          provider: state.provider,
+          apiKey: state.apiKey,
+          onModel: (model) => {
+            state.model = model;
+            renderModel();
+          },
+        });
     const result = await runOrderBot(formatCustomerConversation(state.history), complete);
     finishMessage(pending, result.chatResponse);
     state.history.push({ role: "assistant", content: result.chatResponse });
@@ -341,28 +353,6 @@ function appendMessage(role, content, status = "") {
 function finishMessage(message, content) {
   message.typing.hidden = true;
   message.response.textContent = content;
-}
-
-async function completeLive(operation, input) {
-  const response = await fetch("/api/save-the-build", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    cache: "no-store",
-    body: JSON.stringify({
-      provider: state.provider,
-      apiKey: state.apiKey,
-      operation,
-      input,
-    }),
-  });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.error || "The provider request failed.");
-  if (typeof result.output !== "string") throw new Error("The provider returned an unexpected response.");
-  if (typeof result.model === "string" && result.model.length <= 100) {
-    state.model = result.model;
-    renderModel();
-  }
-  return result.output;
 }
 
 function setStatus(message, kind = "") {

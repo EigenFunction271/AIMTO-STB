@@ -612,7 +612,7 @@
             <h2 class="round-title reveal" data-editable>Did it understand the order?</h2>
             <div class="checkpoint-grid">
               <div class="panel checkpoint-card reveal d1"><span class="tag amber">Pass condition</span><h3 data-editable>Correct items and selling units.</h3><p data-editable>The Kaya Puff note and pickup request are still attached to the order.</p></div>
-              <div class="panel checkpoint-card reveal d2"><span class="tag amber">Responsibility boundary</span><h3 data-editable>01-understanding.js</h3><div class="checkpoint-code"><pre><code>export const UNDERSTANDING_PROMPTS = {
+              <div class="panel checkpoint-card reveal d2"><span class="tag amber">Responsibility boundary</span><h3 data-editable>broken/01-understanding.js</h3><div class="checkpoint-code"><pre><code>export const UNDERSTANDING_BROKEN_PROMPTS = {
 <span class="code-line risk-line">  "extract-broken": (input) =&gt;</span><span class="code-line risk-line">    `Extract this bakery order: ${input}`,</span>
 };</code></pre></div></div>
             </div>
@@ -624,7 +624,7 @@
           </div>
           <footer class="footer"><span>Question · owner · evidence · next action</span><span>15</span></footer>
         </div>
-        <aside class="speaker-notes">Open public/workflow/stages/01-understanding.js. Judge only the observed response. PASS: celebrate that this model understood this case. NEEDS WORK: identify the extraction boundary, then conditionally reveal extractBroken → extractFixed and rerun. NOT REACHED: there is no usable model result yet; resolve the live provider issue or use Fixture only for provider, network, or quota failure. Fallback fixture example only: the controlled response interprets Kaya Puff as an individual piece while retaining the note and pickup.</aside>
+        <aside class="speaker-notes">Open public/workflow/broken/01-understanding.js. The openly browsable reference is public/workflow/answers/01-understanding.js. Judge only the observed response. PASS: celebrate that this model understood this case. NEEDS WORK: compare the matching files, switch extractBroken → extractFixed, and rerun. NOT REACHED: there is no usable model result yet; resolve the live provider issue or use Fixture only for provider, network, or quota failure. Fallback fixture example only: the controlled response interprets Kaya Puff as an individual piece while retaining the note and pickup.</aside>
       </section>
 
       <!-- 16 · Checkpoint 2: Money -->
@@ -635,7 +635,7 @@
             <h2 class="round-title reveal" data-editable>Is the total exactly <span class="accent">RM162?</span></h2>
             <div class="checkpoint-grid">
               <div class="panel checkpoint-card reveal d1"><span class="tag amber">Pass condition</span><h3 data-editable>RM90 + RM12 + RM60.</h3><p data-editable>The result matches the menu and the one-selling-unit rule.</p></div>
-              <div class="panel checkpoint-card reveal d2"><span class="tag amber">Responsibility boundary</span><h3 data-editable>02-money.js</h3><div class="checkpoint-code"><pre><code>export async function priceBroken(order, complete) {
+              <div class="panel checkpoint-card reveal d2"><span class="tag amber">Responsibility boundary</span><h3 data-editable>broken/02-money.js</h3><div class="checkpoint-code"><pre><code>export async function priceBroken(order, complete) {
 <span class="code-line risk-line">  return { ok: false, chatResponse: await complete(</span><span class="code-line risk-line">    "price-broken", JSON.stringify(order)) };</span>
 }</code></pre></div></div>
             </div>
@@ -647,7 +647,7 @@
           </div>
           <footer class="footer"><span>Language can vary · money must not</span><span>16</span></footer>
         </div>
-        <aside class="speaker-notes">Open public/workflow/stages/02-money.js. PASS: show the arithmetic and say this run held. If the workshop pipeline still stops before trusting that answer, activate priceFixed to continue without calling the observed total wrong. NEEDS WORK: conditionally reveal priceBroken → priceFixed, then rerun. NOT REACHED: extraction stopped first; repair and rerun before judging money. Fallback fixture example only: the controlled pricing response is RM159.</aside>
+        <aside class="speaker-notes">Open public/workflow/broken/02-money.js. The openly browsable reference is public/workflow/answers/02-money.js. PASS: show the arithmetic and say this run held. If the workshop pipeline still stops before trusting that answer, activate priceFixed to continue without calling the observed total wrong. NEEDS WORK: compare the matching files, switch priceBroken → priceFixed, and rerun. NOT REACHED: extraction stopped first; repair and rerun before judging money. Fallback fixture example only: the controlled pricing response is RM159.</aside>
       </section>
 
       <!-- 17 · Checkpoint 3: Handoff -->
@@ -658,7 +658,7 @@
             <h2 class="round-title reveal" data-editable>Did every required fact survive?</h2>
             <div class="checkpoint-grid">
               <div class="panel checkpoint-card reveal d1"><span class="tag amber">Pass condition</span><h3 data-editable>Nothing required disappears.</h3><p data-editable>Item lines, total, Kaya Puff note, and pickup request reach the next step.</p></div>
-              <div class="panel checkpoint-card reveal d2"><span class="tag amber">Responsibility boundary</span><h3 data-editable>03-handoff.js</h3><div class="checkpoint-code"><pre><code>export async function invoiceBroken(pricedOrder) {
+              <div class="panel checkpoint-card reveal d2"><span class="tag amber">Responsibility boundary</span><h3 data-editable>broken/03-handoff.js</h3><div class="checkpoint-code"><pre><code>export async function invoiceBroken(pricedOrder) {
 <span class="code-line risk-line">  return { ok: false, chatResponse:</span><span class="code-line risk-line">    `Order received.\nTotal: RM${pricedOrder.totalRm}` };</span>
 }</code></pre></div></div>
             </div>
@@ -670,7 +670,7 @@
           </div>
           <footer class="footer"><span>Preserve every required fact at the handoff</span><span>17</span></footer>
         </div>
-        <aside class="speaker-notes">Open public/workflow/stages/03-handoff.js. PASS: point to each surviving fact. NEEDS WORK: conditionally reveal invoiceBroken → invoiceFixed and rerun. NOT REACHED: extraction or pricing stopped first; repair and rerun before judging the handoff. Fallback fixture example only: the controlled handoff keeps the total but omits the item lines, note, and pickup request.</aside>
+        <aside class="speaker-notes">Open public/workflow/broken/03-handoff.js. The openly browsable reference is public/workflow/answers/03-handoff.js. PASS: point to each surviving fact. NEEDS WORK: compare the matching files, switch invoiceBroken → invoiceFixed, and rerun. NOT REACHED: extraction or pricing stopped first; repair and rerun before judging the handoff. Fallback fixture example only: the controlled handoff keeps the total but omits the item lines, note, and pickup request.</aside>
       </section>
 
       <!-- 18 · Checkpoint 4: Promise -->
@@ -681,7 +681,7 @@
             <h2 class="round-title reveal" data-editable>Did it invent any promise?</h2>
             <div class="checkpoint-grid">
               <div class="panel checkpoint-card reveal d1"><span class="tag amber">Pass condition</span><h3 data-editable>Only known facts are promised.</h3><p data-editable>The reply says pickup was requested and leaves confirmation to Kak Nor.</p></div>
-              <div class="panel checkpoint-card reveal d2"><span class="tag amber">Responsibility boundary</span><h3 data-editable>04-promise.js</h3><div class="checkpoint-code"><pre><code>export async function replyBroken(invoice, complete) {
+              <div class="panel checkpoint-card reveal d2"><span class="tag amber">Responsibility boundary</span><h3 data-editable>broken/04-promise.js</h3><div class="checkpoint-code"><pre><code>export async function replyBroken(invoice, complete) {
 <span class="code-line risk-line">  return { ok: false, chatResponse: await complete(</span><span class="code-line risk-line">    "reply-broken", JSON.stringify(invoice)) };</span>
 }</code></pre></div></div>
             </div>
@@ -693,7 +693,7 @@
           </div>
           <footer class="footer"><span>A fluent sentence is not permission</span><span>18</span></footer>
         </div>
-        <aside class="speaker-notes">Open public/workflow/stages/04-promise.js. PASS: celebrate that this response stayed within the facts. NEEDS WORK: conditionally reveal replyBroken → replyFixed and rerun. NOT REACHED: extraction, pricing, or handoff stopped first; repair and rerun before judging the promise. Fallback fixture example only: the controlled reply changes pickup into delivery and invents a specific time.</aside>
+        <aside class="speaker-notes">Open public/workflow/broken/04-promise.js. The openly browsable reference is public/workflow/answers/04-promise.js. PASS: celebrate that this response stayed within the facts. NEEDS WORK: compare the matching files, switch replyBroken → replyFixed, and rerun. NOT REACHED: extraction, pricing, or handoff stopped first; repair and rerun before judging the promise. Fallback fixture example only: the controlled reply changes pickup into delivery and invents a specific time.</aside>
       </section>
 
       <!-- 19 · Run again -->

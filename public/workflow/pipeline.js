@@ -1,4 +1,5 @@
-// The pipeline receives four stage functions and runs them in order.
+// WORKFLOW RUNNER
+// workflow.js supplies four Broken/Answer stage functions; this file only runs them in order.
 // Each stage returns { ok, value } on success or { ok: false, chatResponse } when it stops.
 export async function runOrderBotWith(pipeline, message, complete) {
   const report = {

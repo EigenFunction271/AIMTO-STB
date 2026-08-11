@@ -1,7 +1,10 @@
-import { DEMO_ORDER } from "./order.js";
+import { DEMO_ORDER } from "../workflow/order.js";
 
-// Fixtures are predictable model replies for workshops without network access.
-// They cross the same parsing and validation boundary as a live AI response.
+/**
+ * OFFLINE MODEL SOURCE
+ * Returns saved example AI text for tests or workshops without provider access.
+ * This is not a workflow stage and it is not the answer scheme.
+ */
 export const FIXTURE_MODEL_OUTPUTS = Object.freeze({
   "extract-broken": `Here's the extracted bakery order:
 
@@ -17,8 +20,7 @@ Let me know if you need anything else!`,
   "reply-broken": "Thanks! Your order will be delivered tomorrow at 5pm 🚚",
 });
 
-// `operation` names the requested model task; the returned value always mimics text from a model.
-export async function completeFixture(operation) {
+export async function completeFromFixture(operation) {
   if (!Object.hasOwn(FIXTURE_MODEL_OUTPUTS, operation)) throw new Error(`Unknown fixture operation: ${operation}`);
   return FIXTURE_MODEL_OUTPUTS[operation];
 }

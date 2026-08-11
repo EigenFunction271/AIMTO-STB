@@ -1,41 +1,46 @@
-// Start here: this file is the workshop switchboard. The detailed work lives in workflow/.
+// START HERE: this is the only file participants edit during the workshop.
+import { extractBroken, UNDERSTANDING_BROKEN_PROMPTS } from "./workflow/broken/01-understanding.js";
+import { priceBroken, MONEY_BROKEN_PROMPTS } from "./workflow/broken/02-money.js";
+import { invoiceBroken } from "./workflow/broken/03-handoff.js";
+import { replyBroken, PROMISE_BROKEN_PROMPTS } from "./workflow/broken/04-promise.js";
+import { extractFixed, UNDERSTANDING_ANSWER_PROMPTS } from "./workflow/answers/01-understanding.js";
+import { priceFixed, priceOrder } from "./workflow/answers/02-money.js";
+import { buildInvoice, invoiceFixed } from "./workflow/answers/03-handoff.js";
+import { buildReply, replyFixed } from "./workflow/answers/04-promise.js";
 import { DEMO_MESSAGE, DEMO_ORDER, MENU, formatCustomerConversation, parseModelJson, validateOrder } from "./workflow/order.js";
-import { FIXTURE_MODEL_OUTPUTS, completeFixture } from "./workflow/fixtures.js";
 import { runOrderBotWith } from "./workflow/pipeline.js";
-import { UNDERSTANDING_PROMPTS, extractBroken, extractFixed } from "./workflow/stages/01-understanding.js";
-import { MONEY_PROMPTS, priceBroken, priceFixed, priceOrder } from "./workflow/stages/02-money.js";
-import { buildInvoice, invoiceBroken, invoiceFixed } from "./workflow/stages/03-handoff.js";
-import { PROMISE_PROMPTS, buildReply, replyBroken, replyFixed } from "./workflow/stages/04-promise.js";
 
+// The local server uses these prompt builders for the supported operations.
 export const PROMPTS = Object.freeze({
-  ...UNDERSTANDING_PROMPTS,
-  ...MONEY_PROMPTS,
-  ...PROMISE_PROMPTS,
+  ...UNDERSTANDING_BROKEN_PROMPTS,
+  ...MONEY_BROKEN_PROMPTS,
+  ...PROMISE_BROKEN_PROMPTS,
+  ...UNDERSTANDING_ANSWER_PROMPTS,
 });
 
-// Change one `Broken` function to its matching `Fixed` function, then rerun the chat.
-// This is the only place that selects which version of each stage is active.
+// Switch one line from Broken to Fixed, then rerun the same customer message.
 export const PIPELINE = Object.freeze({
-  extract: extractBroken,
-  price: priceBroken,
-  invoice: invoiceBroken,
-  reply: replyBroken,
+  extract: extractBroken, // Answer: extractFixed
+  price: priceBroken,     // Answer: priceFixed
+  invoice: invoiceBroken, // Answer: invoiceFixed
+  reply: replyBroken,     // Answer: replyFixed
 });
 
-// Live AI and fixture mode both enter through `complete`; the pipeline itself stays the same.
-export function runOrderBot(message, complete = completeFixture) {
+// The caller must choose a model source before the workflow starts.
+export function runOrderBot(message, complete) {
+  if (typeof complete !== "function") {
+    throw new TypeError("runOrderBot requires completeFromLive or completeFromFixture.");
+  }
   return runOrderBotWith(PIPELINE, message, complete);
 }
 
-// Keep one stable public entry point for the app, server, and tests.
+// Stable exports keep the app, server, existing tests, and workshop snippets working.
 export {
   DEMO_MESSAGE,
   DEMO_ORDER,
   MENU,
-  FIXTURE_MODEL_OUTPUTS,
   buildInvoice,
   buildReply,
-  completeFixture,
   extractBroken,
   extractFixed,
   formatCustomerConversation,

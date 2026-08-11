@@ -1,21 +1,21 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { completeFromFixture } from "../public/model-sources/fixture.js";
 import {
   DEMO_MESSAGE,
   DEMO_ORDER,
-  completeFixture,
-  extractBroken,
-  extractFixed,
   formatCustomerConversation,
-  invoiceBroken,
-  invoiceFixed,
-  priceBroken,
-  priceFixed,
-  replyBroken,
-  replyFixed,
-  runOrderBotWith,
   validateOrder,
-} from "../public/workflow.js";
+} from "../public/workflow/order.js";
+import { runOrderBotWith } from "../public/workflow/pipeline.js";
+import { extractBroken } from "../public/workflow/broken/01-understanding.js";
+import { priceBroken } from "../public/workflow/broken/02-money.js";
+import { invoiceBroken } from "../public/workflow/broken/03-handoff.js";
+import { replyBroken } from "../public/workflow/broken/04-promise.js";
+import { extractFixed } from "../public/workflow/answers/01-understanding.js";
+import { priceFixed } from "../public/workflow/answers/02-money.js";
+import { invoiceFixed } from "../public/workflow/answers/03-handoff.js";
+import { replyFixed } from "../public/workflow/answers/04-promise.js";
 
 test("customer corrections stay ordered and assistant output is never order truth", () => {
   const conversation = formatCustomerConversation([
@@ -70,7 +70,7 @@ test("each repair exposes exactly the next failure", async () => {
   ];
 
   for (const [index, pipeline] of pipelines.entries()) {
-    const result = await runOrderBotWith(pipeline, DEMO_MESSAGE, completeFixture);
+    const result = await runOrderBotWith(pipeline, DEMO_MESSAGE, completeFromFixture);
     assert.equal(result.chatResponse, expectedReplies[index]);
     assert.equal(result.report.status, expectedReports[index].status);
     assert.equal(result.report.stage, expectedReports[index].stage);
@@ -83,7 +83,7 @@ test("broken extraction shows the raw reply but rejects it as order data", async
   const operations = [];
   const complete = async (operation, input) => {
     operations.push(operation);
-    return completeFixture(operation, input);
+    return completeFromFixture(operation, input);
   };
   const result = await runOrderBotWith(
     { extract: extractBroken, price: priceBroken, invoice: invoiceBroken, reply: replyBroken },
@@ -108,7 +108,7 @@ test("the fixed workflow keeps validated facts and only calls extraction AI", as
   const operations = [];
   const complete = async (operation, input) => {
     operations.push(operation);
-    return completeFixture(operation, input);
+    return completeFromFixture(operation, input);
   };
 
   const result = await runOrderBotWith(
@@ -132,13 +132,18 @@ test("an unnumbered Kaya Puff exposes guessing but the fixed contract applies on
   assert.match(DEMO_MESSAGE, /2 kek coklat, kaya puff, and 1 kek lapis/i);
   assert.doesNotMatch(DEMO_MESSAGE, /(?:1|6) kaya puff|half[- ]dozen/i);
 
-  const broken = await extractBroken(DEMO_MESSAGE, completeFixture);
+  const broken = await extractBroken(DEMO_MESSAGE, completeFromFixture);
   assert.match(broken.chatResponse, /1 individual Kaya Puff/);
   assert.match(broken.chatResponse, /without extra sugar/);
   assert.match(broken.chatResponse, /Tomorrow afternoon/);
 
-  const fixed = await extractFixed(DEMO_MESSAGE, completeFixture);
+  const fixed = await extractFixed(DEMO_MESSAGE, completeFromFixture);
   assert.deepEqual(fixed.value.items.find((item) => item.menuId === "K1"), { menuId: "K1", units: 1 });
+});
+
+test("fixture is a predictable model source, not an answer scheme", async () => {
+  assert.equal(await completeFromFixture("price-broken"), "Your order total is RM159.");
+  await assert.rejects(() => completeFromFixture("not-a-stage"), /Unknown fixture operation/);
 });
 
 test("validation rejects unknown IDs and invalid selling units", () => {
